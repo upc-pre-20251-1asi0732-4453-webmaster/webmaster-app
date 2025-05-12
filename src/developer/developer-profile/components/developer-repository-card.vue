@@ -13,7 +13,7 @@ export default {
     },
   },
   created(){
-    console.log(this.projects);
+    console.log(this.projects, 'projects, developer repository');
   }
 
 }
@@ -25,7 +25,7 @@ export default {
     <template #content>
       <hr aria-label="Separator Line">
       <div class="project-container" aria-label="Project Container">
-        <template v-if="projects.length" class="project-list" v-for="project in projects" aria-label="Project Item">
+        <template v-if="projects" class="project-list" v-for="project in projects" aria-label="Project Item">
           <div class="project bg-blue-100" aria-label="Project Information">
             <h4>{{project.title}}</h4>
           </div>

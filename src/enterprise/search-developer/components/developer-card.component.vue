@@ -15,7 +15,7 @@ export default {
     redirectToProfile() {
       //console.log(this.developer.user.user_id)
       //localStorage.setItem('developer id', this.developer.user.user_id)
-      this.$router.push(`/developer-profile/${this.developer.user.user_id}`)
+      this.$router.push(`/developer-profile/${this.developer.userId}`)
     }
   }
 }
@@ -27,7 +27,7 @@ export default {
   <pv-card class="w-8 border-round-3xl shadow-4" aria-label="Developer Card">
     <template #header>
       <div class="flex flex-row justify-content-center mt-4 gap-5" aria-label="Header Section">
-        <pv-avatar :image="developer.profile_img_url" class="mr-2 mt-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
+        <pv-avatar :image="developer.profileImgUrl" class="mr-2 mt-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
         <h3 @click="redirectToProfile" aria-label="Developer Name">{{developer.firstName + " " + developer.lastName}} </h3>
       </div>
     </template>

@@ -27,7 +27,6 @@ export default {
         this.categoryTexts = [
           this.developer.country,
           this.developer.phone,
-          this.developer.user.mail,
           this.developer.completed_projects,
           this.developer.specialties
         ];
@@ -44,7 +43,7 @@ export default {
   <pv-card aria-label="Developer Card">
     <template #title>
       <div class="flex align-items-center gap-4" aria-label="Developer Information">
-        <pv-avatar :image="developer.profile_img_url" class="mr-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
+        <pv-avatar :image="developer.profileImgUrl" class="mr-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
         <div aria-label="Developer Name and Rating">
           <p>{{developer.firstName + developer.lastName}}</p>
           <pv-rating v-model="developer.rating" readonly :cancel="false" aria-label="Developer Rating" />

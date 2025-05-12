@@ -25,6 +25,11 @@ export default {
 
     console.log("projects");
     this.projectService.getProjectByDeveloper(id).then((response) => {
+      console.log(response, "project response");
+      if (response === null) {
+        this.developerRepository = [];
+        return;
+      }
       this.developerRepository = response;
     });
     console.log(this.developerRepository);
