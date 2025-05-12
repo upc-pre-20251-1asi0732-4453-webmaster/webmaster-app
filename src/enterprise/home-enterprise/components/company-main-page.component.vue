@@ -18,8 +18,13 @@ export default {
     const previewImage = ref(null);
     const selectedFile = ref(null);
 
+    console.log(props.company, "props.company");
+
     // Usar directamente el ID de la empresa desde props
     const enterpriseId = computed(() => props.company.enterprise_id || props.company.id);
+    console.log(enterpriseId, "enterpriseId");
+
+    const userId = localStorage.getItem("user id");
 
     // Estados de edición
     const isEditingMain = ref(false);
@@ -51,7 +56,7 @@ export default {
         };
 
         try {
-          await homeService.updateEnterpriseInfo( enterpriseId.value, updatedInfo );
+          await homeService.updateEnterpriseInfo( userId, updatedInfo );
         }
         catch(err) {
           console.error("Error al actualizar información:", err);
@@ -75,7 +80,7 @@ export default {
         };
 
         try {
-          await homeService.updateEnterpriseInfo( enterpriseId.value, updatedInfo );
+          await homeService.updateEnterpriseInfo( userId, updatedInfo );
         }
         catch(err) {
           console.error("Error al actualizar categoría:", err);
@@ -131,7 +136,7 @@ export default {
             sector: categoryTexts.value[4]
           };
 
-          await homeService.updateEnterpriseInfo(enterpriseId.value, updatedInfo);
+          await homeService.updateEnterpriseInfo(userId, updatedInfo);
 
           closeDialog();
 
