@@ -33,6 +33,8 @@ export default {
           response.data.User
       );
       console.log(this.enterpriseProfile);
+
+      localStorage.setItem('profile img', this.enterpriseProfile.profile_img_url);
     }).catch((error) => {
       console.error("Error en la solicitud:", error);
     });

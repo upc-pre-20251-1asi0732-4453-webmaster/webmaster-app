@@ -39,6 +39,8 @@ export default {
           this.enterprise.sector,
           [] // no viene el objeto User completo, dejamos array vacío
       );
+
+      localStorage.setItem('profile img', this.enterprise.profileImgUrl);
     } catch (err) {
       console.error('Error al cargar los datos de la empresa', err);
     }

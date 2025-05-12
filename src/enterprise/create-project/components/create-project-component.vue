@@ -4,7 +4,8 @@
       <!-- Título editable -->
       <template #title>
         <div class="title-container">
-          <img src="/Geekit.png" alt="Logo" />
+          <pv-avatar :image="profile_img" class="mr-2 mt-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
+
           <h1 class="text-center" v-if="!isEditingTitle">{{ titleText }}</h1>
           <pv-inputText
               v-else
@@ -184,7 +185,9 @@ export default {
       methodologies: "",
       errorMessage: "",
 
-      projectService: new ProjectService()
+      projectService: new ProjectService(),
+
+      profile_img: localStorage.getItem('profile img')
     };
   },
   methods: {
