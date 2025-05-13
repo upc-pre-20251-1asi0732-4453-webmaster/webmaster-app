@@ -11,11 +11,17 @@ export default {
       uploadedFiles: [],
       deliverableService: new DeliverableService(),
       deliverable: {},
+      summaryError: false,
     };
   },
   methods: {
     triggerUpload() {
-      this.uploadFile();
+      if (this.developerDescription.length < 20) {
+        this.summaryError = true;
+      } else {
+        this.summaryError = false;
+        this.uploadFile();
+      }
     },
     onFileSelect(event) {
       const file = event.files[0];
@@ -29,7 +35,6 @@ export default {
     },
 
     async uploadFile() {
-
       const projectId = this.$route.params.projectId;
       const deliverableId = this.$route.params.deliverableId;
 
@@ -70,9 +75,7 @@ export default {
       } catch (error) {
         console.error("error in the backend:", error);
       }
-
     }
-
   }
 };
 </script>
@@ -88,13 +91,20 @@ export default {
             <i class="pi pi-times close-button" style="font-size: 1.8rem" @click="redirectToDeliverables()"
                aria-label="Close Card"> </i>
           </div>
-
         </template>
 
         <template #content>
           <div class="flex flex-column">
             <label class="font-bold text-xl mb-3" for="description">{{ $t('upload-description') }}</label>
-            <pv-textarea v-model="developerDescription" auto-resize rows="5" cols="30" class="mb-3"></pv-textarea>
+            <pv-textarea
+                v-model="developerDescription"
+                auto-resize
+                rows="5"
+                cols="30"
+                class="mb-1"
+                :class="{ 'p-invalid': summaryError }"
+            ></pv-textarea>
+            <small v-if="summaryError" class="p-error">{{ $t('Description debe tener al menos 20 caracteres') }}</small>
           </div>
           <hr>
         </template>
@@ -149,4 +159,3 @@ export default {
   cursor: pointer;
 }
 </style>
-
