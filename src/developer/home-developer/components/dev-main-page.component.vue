@@ -36,6 +36,7 @@ export default {
 
 
     // --- Variables de Error ---
+    const countryRequiredError = ref(false);
     const summaryRequiredError = ref(false);
     const summaryLengthError = ref(false);
     const countryLettersOnlyError = ref(false);
@@ -46,7 +47,7 @@ export default {
 
     const hasValidationErrors = computed(() => {
       return summaryRequiredError.value || summaryLengthError.value ||
-          countryLettersOnlyError.value ||
+          countryLettersOnlyError.value || countryRequiredError.value ||
           phoneNumbersPlusError.value || phoneMinLengthError.value ||
           specialtiesLengthError.value || specialtiesAllowedCharsError.value;
     });
@@ -60,8 +61,10 @@ export default {
     };
 
     const validateCountry = (text) => {
-      countryLettersOnlyError.value = !/^[a-zA-Z\s]*$/.test(text.trim()); // Permite espacios
-      return !countryLettersOnlyError.value;
+      const trimmed = text.trim();
+      countryRequiredError.value = trimmed === "";
+      countryLettersOnlyError.value = !countryRequiredError.value && !/^[a-zA-Z\s]*$/.test(trimmed);
+      return !countryRequiredError.value && !countryLettersOnlyError.value;
     };
 
     const validatePhone = (text) => {
@@ -101,6 +104,7 @@ export default {
     const saveAllChanges = async () => {
       // Resetear todos los errores
       summaryRequiredError.value = false;
+      countryRequiredError.value = false;
       summaryLengthError.value = false;
       countryLettersOnlyError.value = false;
       phoneNumbersPlusError.value = false;
@@ -148,6 +152,7 @@ export default {
         // Resetear errores para este campo antes de validar
         if (index === 0) {
           countryLettersOnlyError.value = false;
+          countryRequiredError.value = false;
           isValid = validateCountry(text);
         } else if (index === 1) {
           phoneNumbersPlusError.value = false;
@@ -246,6 +251,7 @@ export default {
 
       // --- Variables de Error para el Template ---
       summaryRequiredError,
+      countryRequiredError,
       summaryLengthError,
       countryLettersOnlyError,
       phoneNumbersPlusError,
@@ -317,7 +323,7 @@ export default {
             type="text"
             class="editable-input"
             :class="{
-            'p-invalid': idx === 0 ? countryLettersOnlyError :
+            'p-invalid': idx === 0 ? countryRequiredError  || countryLettersOnlyError :
                          idx === 1 ? phoneNumbersPlusError || phoneMinLengthError :
                          idx === 2 ? specialtiesLengthError || specialtiesAllowedCharsError :
                          false
@@ -346,6 +352,7 @@ export default {
 
 
       <div class="error-messages">
+        <small id="country-required-error" v-if="countryRequiredError" class="p-error">El país es obligatorio.</small><br v-if="countryRequiredError">
         <small id="country-letters-only-error" v-if="countryLettersOnlyError" class="p-error">El país solo debe contener letras y espacios.</small><br v-if="countryLettersOnlyError">
 
         <small id="phone-numbers-plus-error" v-if="phoneNumbersPlusError" class="p-error">Número en formato incorrecto.</small><br v-if="phoneNumbersPlusError">
