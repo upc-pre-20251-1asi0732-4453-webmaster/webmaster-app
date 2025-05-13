@@ -45,18 +45,6 @@
               class="form-input"
               autoResize
           />
-          <pv-button
-              icon="pi pi-pencil"
-              class="p-button-rounded p-button-text edit-button"
-              v-if="!isEditingDescription"
-              @click="toggleEditingDescription"
-          />
-          <pv-button
-              icon="pi pi-check"
-              class="p-button-rounded p-button-text edit-button"
-              v-else
-              @click="toggleEditingDescription"
-          />
         </div>
 
         <hr />
@@ -109,7 +97,7 @@
           <pv-inputText
               id="project-budget"
               v-model="budget"
-              placeholder="Ej: 1000 USD"
+              placeholder="Ej: 1000"
               class="form-input"
           />
         </div>
@@ -125,7 +113,7 @@
           />
         </div>
 
-        <!-- Error Message -->
+        <!-- Mensaje de error -->
         <p v-if="errorMessage" class="p-error">{{ errorMessage }}</p>
 
         <!-- Botón publicar -->
@@ -150,10 +138,8 @@ export default {
     return {
       isEditingTitle: false,
       titleText: "Nombre del proyecto",
-      isEditingDescription: false,
       descriptionText: "Descripción del proyecto",
 
-      // Listas estáticas según tabla pre‑poblada
       languages: [
         { id: 1, name: "Java" },
         { id: 2, name: "Python" },
@@ -177,7 +163,6 @@ export default {
         { label: "Otro", value: "OTHER" }
       ],
 
-      // Modelos vinculados
       selectedLanguages: [],
       selectedFrameworks: [],
       selectedType: "LANDING_PAGE",
@@ -186,7 +171,6 @@ export default {
       errorMessage: "",
 
       projectService: new ProjectService(),
-
       profile_img: localStorage.getItem('profile img')
     };
   },
@@ -194,16 +178,28 @@ export default {
     toggleEditingTitle() {
       this.isEditingTitle = !this.isEditingTitle;
     },
-    toggleEditingDescription() {
-      this.isEditingDescription = !this.isEditingDescription;
-    },
     validate() {
-      if (!this.titleText.trim()) return "El nombre es obligatorio.";
-      if (!this.descriptionText.trim()) return "La descripción es obligatoria.";
+      // Validaciones generales
+      const title = this.titleText.trim();
+      if (!title) return "El nombre es obligatorio.";
+      if (title.length < 10) return "El nombre debe tener al menos 10 caracteres.";
+
+      const desc = this.descriptionText.trim();
+      if (!desc) return "La descripción es obligatoria.";
+      if (desc.length < 20) return "La descripción debe tener al menos 20 caracteres.";
+
       if (!this.selectedLanguages.length) return "Selecciona al menos un lenguaje.";
       if (!this.selectedFrameworks.length) return "Selecciona al menos un framework.";
-      // type ya tiene valor por defecto
-      if (!this.budget.trim()) return "El presupuesto es obligatorio.";
+
+      const budget = this.budget.trim();
+      if (!budget) return "El presupuesto es obligatorio.";
+      if (!/^\d+(?:\.\d+)?$/.test(budget)) return "El presupuesto debe ser un número válido sin letras.";
+      if (parseFloat(budget) < 0) return "El presupuesto no puede ser negativo.";
+
+      const meth = this.methodologies.trim();
+      if (!meth) return "Las metodologías son obligatorias.";
+      if (meth.length < 2) return "Las metodologías deben tener al menos 2 caracteres.";
+
       return null;
     },
     publishProject() {
@@ -214,7 +210,6 @@ export default {
       }
       this.errorMessage = "";
 
-      // construimos el payload
       const payload = {
         name: this.titleText,
         description: this.descriptionText,
@@ -225,8 +220,6 @@ export default {
         budget: this.budget,
         methodologies: this.methodologies
       };
-
-      console.log("Payload a enviar:", payload);
 
       this.projectService
           .createProject(payload)

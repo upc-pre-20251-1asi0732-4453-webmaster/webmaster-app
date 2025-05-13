@@ -111,6 +111,7 @@ export default {
               this.editableDeliverable.deliverable_id,
               payload
           );
+          this.closeModal();
         } else {
           await this.deliverableService.createDeliverable(this.projectId, payload);
         }
@@ -118,6 +119,8 @@ export default {
         await this.fetchDeliverables();
       } catch (error) {
         console.error('Error creating/updating deliverable:', error);
+        const msg = error.response?.data?.message || "Error al guardar deliverable.";
+        this.errors.deadline = msg;
       }
     },
     async updateDeliverable(updated) {
