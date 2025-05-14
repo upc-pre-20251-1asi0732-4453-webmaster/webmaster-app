@@ -51,7 +51,7 @@
           },
           onCaptchaSuccess(token) {
             this.captchaVerified = true;
-            console.log('hCaptcha token:', token); // Opcional: puedes usar este token para validarlo en el backend si decides hacerlo más adelante.
+            // Usar token para validar en el back para el prox sprint
           },
           login() {
             if (this.validateFields()) {
