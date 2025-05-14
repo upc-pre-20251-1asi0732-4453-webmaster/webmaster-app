@@ -11,6 +11,8 @@ export default {
       required: true
     }
   },
+
+
   setup(props) {
     const homeService = new HomeService();
     const { uploadFile, getPublicUrl } = useSupabase();
@@ -19,6 +21,7 @@ export default {
     const selectedFile = ref(null);
 
     console.log(props.company, "props.company");
+
 
     // Usar directamente el ID de la empresa desde props
     const enterpriseId = computed(() => props.company.enterprise_id || props.company.id);
@@ -40,54 +43,188 @@ export default {
     const displayDialog = ref(false);
     const newImgUrl = ref("");
 
+    // --- Variables de Error ---
+    const summaryRequiredError = ref(false);
+    const summaryLengthError = ref(false);
+    const countryRequiredError = ref(false);
+    const countryLettersOnlyError = ref(false);
+    const rucRequiredError = ref(false);
+    const rucOnlyNumbersError = ref(false);
+    const rucMinLengthError = ref(false);
+    const phoneRequiredError = ref(false);
+    const phoneNumbersPlusError = ref(false);
+    const phoneMinLengthError = ref(false);
+    const websiteRequiredError = ref(false);
+    const websiteFormatError = ref(false);
+    const sectorRequiredError = ref(false);
+    const sectorMinLengthError = ref(false);
+
+    const hasValidationErrors = computed(() => {
+      return summaryRequiredError.value || summaryLengthError.value ||
+          countryRequiredError.value || countryLettersOnlyError.value ||
+          rucRequiredError.value || rucOnlyNumbersError.value || rucMinLengthError.value ||
+          phoneRequiredError.value || phoneNumbersPlusError.value || phoneMinLengthError.value ||
+          websiteRequiredError.value || websiteFormatError.value ||
+          sectorRequiredError.value || sectorMinLengthError.value;
+    });
+
+    // --- Funciones de Validación ---
+    const validateSummary = () => {
+      summaryRequiredError.value = mainText.value.trim() === "";
+      summaryLengthError.value = !summaryRequiredError.value && mainText.value.trim().length < 20;
+      return !summaryRequiredError.value && !summaryLengthError.value;
+    };
+
+
+
+    const validateCountry = (text) => {
+      const trimmed = text.trim();
+      countryRequiredError.value = trimmed === "";
+      countryLettersOnlyError.value = !countryRequiredError.value && !/^[a-zA-Z\s]*$/.test(trimmed);
+      return !countryRequiredError.value && !countryLettersOnlyError.value;
+    };
+
+    const validateRUC = (text) => {
+      const trimmed = text.trim();
+      rucRequiredError.value = trimmed === "";
+      rucOnlyNumbersError.value = !rucRequiredError.value && /\D/.test(trimmed);
+      rucMinLengthError.value = !rucRequiredError.value && trimmed.length < 11;
+      return !rucRequiredError.value && !rucOnlyNumbersError.value && !rucMinLengthError.value;
+    };
+
+    const validatePhone = (text) => {
+      const trimmed = text.trim();
+      phoneRequiredError.value = trimmed === "";
+
+      const hasMultipleSpaces = (trimmed.split(' ').length - 1) > 1;
+      const startsWithPlusAndHasSpaceAfter = /^\+\s/.test(trimmed);
+      const hasSpaceNotAfterPlus = /^\+[^\s]/.test(trimmed) && trimmed.includes(' ');
+      const isValidFormat = /^\+?\d+(\s?\d+)*$/.test(trimmed);
+
+      phoneNumbersPlusError.value = !phoneRequiredError.value &&
+          (!isValidFormat || startsWithPlusAndHasSpaceAfter || hasSpaceNotAfterPlus || hasMultipleSpaces);
+
+      phoneMinLengthError.value = !phoneRequiredError.value &&
+          !phoneNumbersPlusError.value && trimmed.replace(/\s/g, '').length < 7;
+
+      return !phoneRequiredError.value && !phoneNumbersPlusError.value && !phoneMinLengthError.value;
+    };
+
+    const validateWebsite = (text) => {
+      const trimmed = text.trim();
+      websiteRequiredError.value = trimmed === "";
+      // Validar formato de URL simple (no perfecta, pero útil para frontend)
+      websiteFormatError.value = !websiteRequiredError.value && !/^https?:\/\/[\w.-]+\.\w+/.test(trimmed);
+      return !websiteRequiredError.value && !websiteFormatError.value;
+    };
+
+
     // Editar campo principal (descripción)
     const toggleEditingMain = async () => {
       if ( isEditingMain.value ) {
-        const updatedInfo = {
-          // Aquí definimos exactamente el payload que espera el endpoint PUT /enterprises/{id}
-          enterpriseName: props.company.enterprise_name,
-          description:    mainText.value,
-          country:        categoryTexts.value[0],
-          ruc:            categoryTexts.value[1],
-          phone:          categoryTexts.value[2],
-          website:        categoryTexts.value[3],
-          profileImgUrl:  props.company.profile_img_url,
-          sector:         categoryTexts.value[4]
-        };
-
-        try {
-          await homeService.updateEnterpriseInfo( userId, updatedInfo );
+        const isValid = validateSummary();
+          if (!isValid) return;
         }
-        catch(err) {
-          console.error("Error al actualizar información:", err);
-        }
-      }
       isEditingMain.value = !isEditingMain.value;
     };
 
-    // Editar categoría individual
-    const toggleEditingCategory = async (index) => {
-      if ( isEditingCategories.value[index] ) {
+
+
+
+
+    const saveAllChanges = async () => {
+      // Resetear todos los errores
+      summaryRequiredError.value = false;
+       summaryLengthError.value = false;
+       countryRequiredError.value = false;
+       countryLettersOnlyError.value = false;
+       rucRequiredError.value = false;
+       rucOnlyNumbersError.value = false;
+       rucMinLengthError.value = false;
+       phoneRequiredError.value = false;
+       phoneNumbersPlusError.value = false;
+       phoneMinLengthError.value = false;
+       websiteRequiredError.value = false;
+       websiteFormatError.value = false;
+       sectorRequiredError.value = false;
+       sectorMinLengthError.value = false;
+
+      // Validar cada campo
+      const isSummaryValid = validateSummary(mainText.value);
+      const isCountryValid = validateCountry(categoryTexts.value[0]);
+      const isRUCValid = validateRUC(categoryTexts.value[1]);
+      const isPhoneValid = validatePhone(categoryTexts.value[2]);
+      const isWebsiteValid = validateWebsite(categoryTexts.value[3]);
+      const isSectorValid = validateSummary(categoryTexts.value[4]);
+
+      //Si todos los campos son validos
+      if (isCountryValid && isRUCValid && isPhoneValid && isWebsiteValid && isSectorValid) {
         const updatedInfo = {
           enterpriseName: props.company.enterprise_name,
-          description:    mainText.value,
-          country:        categoryTexts.value[0],
-          ruc:            categoryTexts.value[1],
-          phone:          categoryTexts.value[2],
-          website:        categoryTexts.value[3],
-          profileImgUrl:  props.company.profile_img_url,
-          sector:         categoryTexts.value[4]
+          description: mainText.value,
+          country: categoryTexts.value[0],
+          ruc: categoryTexts.value[1],
+          phone: categoryTexts.value[2],
+          website: categoryTexts.value[3],
+          profileImgUrl: props.company.profile_img_url,
+          sector: categoryTexts.value[4]
         };
 
         try {
-          await homeService.updateEnterpriseInfo( userId, updatedInfo );
-        }
-        catch(err) {
+          await homeService.updateEnterpriseInfo(userId, updatedInfo);
+          isEditingCategories.value = [false, false, false, false, false];
+          isEditingMain.value = false;
+        } catch (err) {
           console.error("Error al actualizar categoría:", err);
         }
       }
+    };
+
+
+
+
+    const toggleEditingCategory = async (index) => {
+      if (isEditingCategories.value[index]) {
+        // El usuario está saliendo del modo edición
+        // Validamos, pero NO hacemos update
+        let isValid = false;
+        const text = categoryTexts.value[index];
+
+        // Resetear errores para este campo antes de validar
+        if (index === 0) { // Country
+          countryRequiredError.value = false;
+          countryLettersOnlyError.value = false;
+          isValid = validateCountry(text);
+        } else if (index === 1) { // RUC
+          rucRequiredError.value = false;
+          rucOnlyNumbersError.value = false;
+          rucMinLengthError.value = false;
+          isValid = validateRUC(text);
+        } else if (index === 2) { // Phone
+          phoneRequiredError.value = false;
+          phoneNumbersPlusError.value = false;
+          phoneMinLengthError.value = false;
+          isValid = validatePhone(text);
+        } else if (index === 3) { // Website
+          websiteRequiredError.value = false;
+          websiteFormatError.value = false;
+          isValid = validateWebsite(text);
+        } else if (index === 4) { // Sector
+          sectorRequiredError.value = false;
+          sectorMinLengthError.value = false;
+          isValid = validateSummary(text);
+        }
+
+
+        // Si NO es válido, no permitas salir del modo edición
+        if (!isValid) return;
+      }
+
+      // Alternar el estado de edición
       isEditingCategories.value[index] = !isEditingCategories.value[index];
     };
+
+
 
     const handleFileSelect = (event) => {
       const file = event.files[0];
@@ -167,7 +304,26 @@ export default {
       updateImg,
       handleFileSelect,
       openDialog,
-      closeDialog
+      closeDialog,
+
+
+      // --- Variables de Error para el Template ---
+      summaryRequiredError,
+      summaryLengthError,
+      countryRequiredError,
+      countryLettersOnlyError,
+      rucRequiredError,
+      rucOnlyNumbersError,
+      rucMinLengthError,
+      phoneRequiredError,
+      phoneNumbersPlusError ,
+      phoneMinLengthError ,
+      websiteRequiredError,
+      websiteFormatError,
+      sectorRequiredError,
+      sectorMinLengthError,
+      hasValidationErrors ,
+      saveAllChanges
     };
   }
 };
@@ -191,7 +347,7 @@ export default {
     <template #content>
       <hr aria-label="Separator Line" />
       <div class="subtitle" aria-label="Summary">{{ $t('company-main-page-part1') }}</div>
-      
+
       <!-- Descripción editable -->
       <div class="editable-container">
         <span v-if="!isEditingMain" class="editable-text">{{ mainText }}</span>
@@ -200,7 +356,7 @@ export default {
             v-model="mainText"
             auto-resize
             class="editable-input"
-        />
+            :class="{'p-invalid': summaryRequiredError || summaryLengthError}" />
         <pv-button
             @click="toggleEditingMain"
             icon="pi pi-pencil"
@@ -214,9 +370,15 @@ export default {
             v-else
         />
       </div>
+      <small id="summary-required-error" v-if="summaryRequiredError" class="p-error">El summary es requerido.</small>
+      <small id="summary-length-error" v-if="summaryLengthError" class="p-error">El summary debe tener al menos 20 caracteres.</small>
+      <br v-if="summaryRequiredError || summaryLengthError">
 
       <!-- Campos editables básicos -->
-      <div v-for="(label, idx) in ['country','ruc','phone',/*'email'*/'website','sector']" :key="idx" class="editable-container secondary">
+      <div v-for="(label, idx) in ['country','ruc','phone',/*'email'*/'website','sector']"
+           :key="idx"
+           class="editable-container secondary"
+      >
         <div class="subtitle">{{ $t(`categories.${label}`) }}</div>
         <span v-if="!isEditingCategories[idx]" class="editable-text">{{ categoryTexts[idx] }}</span>
         <input
@@ -224,6 +386,15 @@ export default {
             v-model="categoryTexts[idx]"
             type="text"
             class="editable-input"
+            :class="{
+            'p-invalid': idx === 0 ? countryRequiredError || countryLettersOnlyError :
+               idx === 1 ? rucRequiredError || rucOnlyNumbersError || rucMinLengthError :
+               idx === 2 ? phoneRequiredError || phoneNumbersPlusError || phoneMinLengthError :
+               idx === 3 ? websiteRequiredError || websiteFormatError :
+               idx === 4 ? sectorRequiredError || sectorMinLengthError :
+               false
+          }"
+
         />
         <pv-button
             @click="toggleEditingCategory(idx)"
@@ -238,6 +409,33 @@ export default {
             v-else
         />
       </div>
+
+      <button
+          class="button-green"
+          @click="saveAllChanges" :disabled="hasValidationErrors">
+        Guardar cambios
+      </button>
+
+      <div class="error-messages">
+        <small id="country-required-error" v-if="countryRequiredError" class="p-error">El país es obligatorio.</small><br v-if="countryRequiredError">
+        <small id="country-letters-only-error" v-if="countryLettersOnlyError" class="p-error">El país solo debe contener letras y espacios.</small><br v-if="countryLettersOnlyError">
+
+        <small id="ruc-required-error" v-if="rucRequiredError" class="p-error">El RUC es obligatorio.</small><br v-if="rucRequiredError">
+        <small id="ruc-only-numbers-error" v-if="rucOnlyNumbersError" class="p-error">El RUC solo debe contener números.</small><br v-if="rucOnlyNumbersError">
+        <small id="ruc-min-length-error" v-if="rucMinLengthError" class="p-error">El RUC debe tener al menos 11 caracteres.</small><br v-if="rucMinLengthError">
+
+        <small id="phone-required-error" v-if="phoneRequiredError" class="p-error">El teléfono es obligatorio.</small><br v-if="phoneRequiredError">
+        <small id="phone-numbers-plus-error" v-if="phoneNumbersPlusError" class="p-error">Número en formato incorrecto.</small><br v-if="phoneNumbersPlusError">
+        <small id="phone-min-length-error" v-if="phoneMinLengthError" class="p-error">El teléfono es demasiado corto.</small><br v-if="phoneMinLengthError">
+
+        <small id="website-required-error" v-if="websiteRequiredError" class="p-error">El sitio web es obligatorio.</small><br v-if="websiteRequiredError">
+        <small id="website-format-error" v-if="websiteFormatError" class="p-error">El formato del sitio web es incorrecto.</small><br v-if="websiteFormatError">
+
+        <small id="sector-required-error" v-if="sectorRequiredError" class="p-error">El sector es obligatorio.</small><br v-if="sectorRequiredError">
+        <small id="sector-min-length-error" v-if="sectorMinLengthError" class="p-error">El sector debe tener al menos 3 caracteres.</small><br v-if="sectorMinLengthError">
+      </div>
+
+
     </template>
   </pv-card>
 
@@ -276,6 +474,16 @@ export default {
 </template>
 
   <style scoped>
+  .button-green {
+    background-color: #16a34a; /* Equivalente a bg-green-600 */
+    color: #ffffff;            /* Texto blanco */
+    padding: 0.5rem 1rem;      /* py-2 (0.5rem top/bottom) y px-4 (1rem left/right) */
+    border-radius: 9999px;     /* Borde redondeado al máximo (pill shape) */
+    border: none;              /* Sin borde */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1); /* Sombra grande similar a shadow-lg */
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease;
+  }
     .editable-container { display:flex; align-items:center; margin: .5rem 0; }
     .editable-input { flex:1; border-bottom:1px solid #ccc; padding: .25rem; }
     .edit-button { margin-left:.5rem; max-height: 34px; }

@@ -12,6 +12,8 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 
+import Calendar from 'primevue/calendar';
+
 //PrimeServices
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
@@ -72,4 +74,5 @@ createApp(App)
     .component('pv-toast', Toast)
     .component('pv-sidebar', Sidebar)
     .component('pv-select-button', SelectButton)
+    .component('pv-calendar', Calendar)
     .mount('#app')
