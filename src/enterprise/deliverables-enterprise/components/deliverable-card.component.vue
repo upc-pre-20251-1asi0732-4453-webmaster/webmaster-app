@@ -27,7 +27,6 @@ export default {
   components: {},
   props: {
     deliverable: {
-      type: DeliverableEntity,
       required: true
     }
   },
@@ -38,10 +37,10 @@ export default {
 </script>
 
 <template>
-  <pv-card class="shadow-8 mt-8 card" aria-label="Deliverable Card">
+  <pv-card class="shadow-8 mt-8 card" aria-label="Deliverable Card" v-if="deliverable">
     <template #title>
       <div class="flex flex-column justify-content-center align-items-center mt-3 mb-4" aria-label="Deliverable Title">
-        <div>{{ $t('delivery-card-part1') }} {{ deliverable.orderNumber }}</div>
+        <div>{{ $t('delivery-card-part1') }} {{ deliverable.id }}</div>
         <i class="pi pi-times close-button" style="font-size: 1.8rem" @click="redirectToDeliverables()"
            aria-label="Close Card"> </i>
       </div>
@@ -53,7 +52,7 @@ export default {
              aria-label="Description Label">{{ $t('delivery-card-part2') }}
         </div>
         <div class="flex align-items-center justify-content-center mb-3" aria-label="Description">
-          {{ deliverable.developerDescription }}
+          {{ deliverable.developerMessage }}
         </div>
       </div>
       <hr aria-label="Divider">

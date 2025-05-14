@@ -23,7 +23,7 @@ export default {
     goToReviewDeliverable() {
       const projectId = this.deliverable.projectID;
       const deliverableId = this.deliverable.deliverable_id;
-      this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Review`);
+      this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/review`);
     }
   }
 };
@@ -73,17 +73,17 @@ export default {
               <span v-else class="pi pi-chevron-circle-down" style="font-size: 2rem"></span>
             </div>
             <div class="flex flex-column align-items-center card text-center -mt-3 ml-5">
-              <span v-if="deliverable.state === 'Aprobado'" >
+              <span v-if="deliverable.state === 'APPROVED'" >
                 <br>{{ $t('approved') }}
               </span>
-              <span v-else-if="deliverable.state === 'En espera de revisión'" >
-               <br>{{ $t('pending') }}
+              <span v-else-if="deliverable.state === 'PENDING'" >
+               <br>{{ $t('waiting') }}
               </span>
-              <span v-else-if="deliverable.state === 'Rechazado'">
+              <span v-else-if="deliverable.state === 'REJECTED'">
                 <br>{{ $t('rejected') }}
               </span>
               <span v-else>
-                <br>{{ $t('waiting') }}
+                <br>{{ $t('pending') }}
               </span>
 
             </div>

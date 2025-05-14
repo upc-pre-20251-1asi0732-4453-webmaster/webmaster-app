@@ -34,7 +34,6 @@ export default {
         const raw = await this.deliverableService.getAllDeliverables(this.projectId);
 
         this.deliverables = raw.map(item => {
-          console.log('Raw deliverableData:', item);
 
           // 1) Creamos un Date a partir del ISO-string
           const dateObj = new Date(item.date);
@@ -54,7 +53,7 @@ export default {
               dateObj,               // deadlineDateValue (Date con fecha y hora)
               timeStr,               // deadlineTime  (string "HH:mm")
               item.orderNumber,      // (si existe)
-              item.projectID,        // (si existe)
+              item.projectId,        // (si existe)
               item.developer_id      // (si existe)
           );
         });

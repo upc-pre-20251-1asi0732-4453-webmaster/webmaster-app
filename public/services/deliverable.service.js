@@ -39,12 +39,12 @@ export class DeliverableService{
     }
 
     async uploadDeliverableFile(projectId, deliverableId, uploadFile) {
-        const response = await http.put(`/Projects/${projectId}/deliverables/${deliverableId}/Upload`, uploadFile);
+        const response = await http.patch(`/Projects/${projectId}/deliverables/${deliverableId}/upload`, uploadFile);
         return response.data;
     }
 
     async approveDeliverable(projectId, deliverableId) {
-        const response = await http.put(`/Projects/${projectId}/deliverables/${deliverableId}/Approve`);
+        const response = await http.patch(`/Projects/${projectId}/deliverables/${deliverableId}/Approve`);
         return response.data;
     }
 
@@ -53,8 +53,8 @@ export class DeliverableService{
         return response.data;
     }
 
-    async reviewDeliverable(projectId, deliverableId) {
-        const response = await http.get(`/Projects/${projectId}/deliverables/${deliverableId}/Review`);
+    async reviewDeliverable(projectId, deliverableId, data) {
+        const response = await http.patch(`/Projects/${projectId}/deliverables/${deliverableId}/review`, data);
         return response.data;
     }
 

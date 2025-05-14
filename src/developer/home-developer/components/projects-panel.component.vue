@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     goToDeliverablesList(projectId) {
-      this.$router.push(`/projects/developers/${projectId}/Deliverables`);
+      this.$router.push(`/projects/developers/${projectId}/deliverables`);
     },
     translateState(state) {
       const stateMap = {

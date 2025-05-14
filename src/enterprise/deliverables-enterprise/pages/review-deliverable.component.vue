@@ -23,7 +23,7 @@ export default {
   methods: {
     async fetchDeliverable(projectId, deliverableId) {
       try {
-        const deliverable = await this.deliverableService.reviewDeliverable(projectId, deliverableId);
+        const deliverable = await this.deliverableService.getDeliverableById(projectId, deliverableId);
         this.myDeliverable = deliverable;
       } catch (error) {
         console.error('Error fetching deliverable:', error);
@@ -31,12 +31,12 @@ export default {
     },
     async approveDeliverable() {
       const { projectId, deliverableId } = this.$route.params;
-      await this.deliverableService.approveDeliverable(projectId, deliverableId);
+      await this.deliverableService.reviewDeliverable(projectId, deliverableId, true);
       this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Approved`);
     },
     async rejectDeliverable() {
       const { projectId, deliverableId } = this.$route.params;
-      await this.deliverableService.rejectDeliverable(projectId, deliverableId);
+      await this.deliverableService.reviewDeliverable(projectId, deliverableId, false);
       this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Rejected`);
     },
     handleApproval(action) {
