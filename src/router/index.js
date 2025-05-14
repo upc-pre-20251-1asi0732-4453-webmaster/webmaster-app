@@ -83,7 +83,8 @@ const router = createRouter({
                     component: SearchDeveloperList
                 },
                 {
-                    path: '/message',
+                    path:'',
+                    // path: '/message',
                     name: 'message-page',
                     component: MessagePage
                 },
@@ -123,7 +124,7 @@ const router = createRouter({
                     component: RejectedDeliverable
                 },
                 {
-                    path:'/projects/:projectId/Deliverables/:deliverableId/Create',
+                    path:'/projects/developers/:projectId/deliverables/:deliverableId/create',
                     name:'create-deliverable',
                     component:CreateDeliverable
                 },

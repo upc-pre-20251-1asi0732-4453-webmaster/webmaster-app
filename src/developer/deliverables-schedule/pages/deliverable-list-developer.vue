@@ -30,18 +30,23 @@ export default {
       try {
         const deliverables = await this.deliverableService.getAllDeliverables(this.projectId);
         this.deliverables = deliverables.map(deliverableData => {
+          const dateObj = new Date(deliverableData.date);
+          const hours = String(dateObj.getHours()).padStart(2, '0');
+          const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+          const timeStr = `${hours}:${minutes}`;
+
           return new DeliverableEntity(
-              deliverableData.deliverable_id,
-              deliverableData.title,
-              deliverableData.description,
-              deliverableData.developerDescription,
-              deliverableData.state,
-              deliverableData.file,
-              deliverableData.deadlineDateValue,
-              deliverableData.deadlineTime,
-              deliverableData.orderNumber,
-              deliverableData.projectID,
-              deliverableData.developer_id
+              deliverableData.id,               // deliverable_id
+              deliverableData.name,             // title
+              deliverableData.description,      // description
+              deliverableData.developerDescription, // (si existe)
+              deliverableData.state,            // state
+              deliverableData.file,             // (si existe)
+              dateObj,
+              timeStr,
+              deliverableData.orderNumber,      // (si existe)
+              deliverableData.projectID,        // (si existe)
+              deliverableData.developer_id      // (si existe)
           );
         });
         console.log('Array of deliverables:', this.deliverables);

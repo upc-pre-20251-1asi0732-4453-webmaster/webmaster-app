@@ -31,7 +31,7 @@ export default {
 
     redirectToDeliverables() {
       const projectId = this.$route.params.projectId;
-      this.$router.push(`/projects/developers/${projectId}/Deliverables`);
+      this.$router.push(`/projects/developers/${projectId}/deliverables`);
     },
 
     async uploadFile() {
@@ -71,7 +71,7 @@ export default {
       try {
         //send the file to the backend
         const response = await this.deliverableService.uploadDeliverableFile(projectId, deliverableId, uploadData);
-        this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Upload`);
+        this.$router.push(`/projects/${projectId}/deliverables/${deliverableId}/upload`);
       } catch (error) {
         console.error("error in the backend:", error);
       }

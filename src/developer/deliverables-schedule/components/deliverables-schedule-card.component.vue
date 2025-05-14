@@ -20,8 +20,11 @@ export default {
     goToSendDeliverable() {
       const projectId = this.deliverable.projectID;
       const deliverableId = this.deliverable.deliverable_id;
-      this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Create`);
+      this.$router.push(`/${deliverableId}/create`);
     }
+  },
+  created() {
+    console.log(this.deliverable);
   }
 };
 </script>
