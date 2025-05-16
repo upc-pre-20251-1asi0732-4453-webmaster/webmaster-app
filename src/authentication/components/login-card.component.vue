@@ -36,7 +36,7 @@ export default {
         this.errors.Password = 'La contraseña es obligatoria.';
         isValid = false;
       } else if (this.Password.length < 8) {
-        this.errors.Password = 'La contraseña debe tener al menos 8 caracteres.';
+        this.errors.Password = 'Mínimo 8 caracteres.';
         isValid = false;
       } else {
         this.errors.Password = '';
