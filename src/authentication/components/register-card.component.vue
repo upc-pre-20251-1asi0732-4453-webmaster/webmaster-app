@@ -47,7 +47,7 @@ export default {
       if (!this.password) {
         this.errors.password = "La contraseña es obligatoria.";
       } else if (this.password.length < 8) {
-        this.errors.password = "La contraseña debe tener al menos 8 caracteres.";
+        this.errors.password = "Mínimo 8 caracteres.";
       }
 
       if (!this.selectedRole) {
