@@ -41,6 +41,8 @@
   "create-project-part19": "Cancelar",
   "create-project-part20": "Confimar",
   "create-project-part21": "Editar Proyecto",
+  "projects-panel-new": "+ Nuevo Proyecto",
+  "projects-panel-enterprise-empty": "No hay proyectos aún.",
   "categories": {
     "country": "País",
     "ruc": "RUC",

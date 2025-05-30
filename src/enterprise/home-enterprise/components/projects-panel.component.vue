@@ -97,25 +97,47 @@ export default {
 
 <template>
   <pv-card>
-    <template #title> <p  style="color: #3554BC">{{ $t('projects-panel-enterprise-part1') }}</p></template>
-    <template #content v-if="projects">
-      <hr>
-      <div v-if="projects.length === 0" class="p-m-3">No hay proyectos aún.</div>
-      <template class="project-list" v-for="project in projects">
-        <div class="project">
-          <h4 @click="handleProjectClick(project.project_ID, project.stateProject)">
-            {{ project.nameProject }}
-          </h4>
+
+    <template #title>
+      <div class="projects-header">
+        <h1 class="projects-title">{{ $t('projects-panel-enterprise-part1') }}</h1>
+        <router-link to="/create-project">
+          <pv-button
+              class="new-project-button"
+              :label="$t('projects-panel-new')"
+          />
+        </router-link>
+      </div>
+    </template>
+
+    <template #content>
+      <hr class="separator"/>
+      <div v-if="projects && projects.length === 0" class="p-m-3">
+        {{ $t('projects-panel-enterprise-empty') }}
+      </div>
+      <div v-else class="project-list">
+        <div
+            v-for="project in projects"
+            :key="project.project_ID"
+            class="project"
+            @click="handleProjectClick(project.project_ID, project.stateProject)"
+        >
+          <h4>{{ project.nameProject }}</h4>
           <p class="subtitle tipo-proyecto">
             {{ projectStateMap[project.stateProject] }}
           </p>
-          <p class="postulantes"  v-if="project.stateProject === 'LOOKING_FOR_DEVELOPERS'" @click="openPosition('center', project.stateProject, project.applicantsList, project.project_ID)">{{ $t('projects-panel-enterprise-part2') }}: {{project.applicantsList.length}}</p>
-          <pv-progressbar v-else :value="project.projectProgressBar"></pv-progressbar>
+          <p
+              class="postulantes"
+              v-if="project.stateProject === 'LOOKING_FOR_DEVELOPERS'"
+              @click.stop="openPosition('center', project.stateProject, project.applicantsList, project.project_ID)"
+          >
+            {{ $t('projects-panel-enterprise-part2') }}: {{ project.applicantsList.length }}
+          </p>
+          <pv-progressbar v-else :value="project.projectProgressBar"/>
         </div>
-      </template>
+      </div>
     </template>
   </pv-card>
-
   <div class="card">
     <pv-dialog v-model:visible="visible" :header="$t('projects-panel-enterprise-part3')" :style="{ width: '25rem', height: '100vh', display: 'block', overflow:'auto' }" :position="position" :modal="true" :draggable="false">
       <div v-if="applicantsList.length === 0">
@@ -126,8 +148,8 @@ export default {
         <div class="project applicant">
           <h4>{{applicant.firstName +" "+applicant.lastName}}</h4>
           <div class="p-card-title">
-          <pv-avatar :image="applicant.profile_img_url" class="mr-2" size="xlarge" shape="circle" @click="goToDevProfile(applicant.developer_id)" />
-          <pv-rating v-model="applicant.rating" readonly :cancel="false" />
+            <pv-avatar :image="applicant.profile_img_url" class="mr-2" size="xlarge" shape="circle" @click="goToDevProfile(applicant.developer_id)" />
+            <pv-rating v-model="applicant.rating" readonly :cancel="false" />
           </div>
           <span>{{ applicant.description }}</span>
           <pv-button class="choose-dev" @click="chooseApplicant(applicant)">{{ $t('projects-panel-enterprise-part3') }}</pv-button>
@@ -136,6 +158,7 @@ export default {
     </pv-dialog>
   </div>
 </template>
+
 
 <style scoped>
 hr{
@@ -273,4 +296,41 @@ h4{
 .choose-dev:hover{
   background: #B864F3;
 }
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6.5rem;
+}
+.projects-title {
+  color: #3554BC;
+  font-size: 1.5rem;
+  margin: 0;
+}
+.new-project-button {
+  background-color: #6B46C1; /* morado */
+  color: white;
+  margin-left: 1px;
+}
+.separator {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  margin: 0.5rem 0 1rem;
+}
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+.project {
+  background-color: #F0F0F0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+}
+
+
 </style>
