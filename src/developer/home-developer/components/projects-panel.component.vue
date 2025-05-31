@@ -1,5 +1,5 @@
 <script>
-import {useRouter} from 'vue-router';
+import { useRouter } from "vue-router";
 
 export default {
   name: "projects-panel.component",
@@ -54,7 +54,7 @@ export default {
               <span><strong>Estado:</strong> {{ translateState(project.stateProject) }}</span>
             </div>
             <div class="progress-section">
-              <pv-progressbar :value="project.projectProgressBar" showValue/>
+              <pv-progressbar :value="project.projectProgressBar" showValue />
             </div>
           </template>
 
@@ -76,10 +76,9 @@ export default {
 .projects-panel-card {
   width: 30rem;
   min-width: 20rem;
-  max-height: 800px;
-  min-height: 620px;
+  max-width: 30rem;
+  height: 800px;
   margin: 4rem auto;
-  padding: 1.5rem;
   background: #f9fafb;
   box-shadow: 0 20px 40px rgb(57, 57, 57);
   border-radius: 12px;
@@ -94,6 +93,9 @@ export default {
 }
 
 .project-list {
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 10px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
@@ -154,14 +156,32 @@ export default {
   align-items: center;
 }
 
-.progress-section ::v-deep .p-progressbar {
+.progress-section :deep(.p-progressbar) {
   width: 100%;
   max-width: 250px;
   height: 1rem;
 }
 
-.progress-section ::v-deep .p-progressbar .p-progressbar-value {
+.progress-section :deep(.p-progressbar .p-progressbar-value) {
   background: linear-gradient(to right, #3554BC, #B864F3);
+}
+
+.project-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.project-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.project-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @media (max-width: 640px) {
@@ -169,10 +189,13 @@ export default {
     width: auto;
     margin: 2rem 1rem;
     padding: 1rem;
+    height: 100vh;
   }
 
   .project-list {
-    grid-template-columns: 1fr;
+    max-height: calc(100vh - 200px);
+    gap: 1rem;
+    padding-right: 5px;
   }
 }
 </style>
