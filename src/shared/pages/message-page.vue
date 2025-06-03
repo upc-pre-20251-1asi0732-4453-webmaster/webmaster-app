@@ -1,15 +1,19 @@
 <script>
 import MessageForm from "../components/message-form.component.vue";
+import ChatComponent from "../components/chat-component.vue";
 
 export default {
   name: "message-page",
-  components: {MessageForm}
+  components: {ChatComponent, MessageForm}
 }
 </script>
 
 <template>
 
-  <message-form/>
+  <!--  <message-form/>-->
+
+
+
 
 </template>
 
