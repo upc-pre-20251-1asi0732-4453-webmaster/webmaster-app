@@ -41,6 +41,8 @@ import Toast from 'primevue/toast';
 import Password from 'primevue/password';
 import Sidebar from 'primevue/sidebar';
 import SelectButton from 'primevue/selectbutton';
+import Chat from 'vue3-beautiful-chat'
+
 //Import Router
 import router from "./router/index.js";
 
@@ -75,4 +77,6 @@ createApp(App)
     .component('pv-sidebar', Sidebar)
     .component('pv-select-button', SelectButton)
     .component('pv-calendar', Calendar)
+    .component('BeautifulChat', Chat)
+
     .mount('#app')
