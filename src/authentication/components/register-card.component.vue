@@ -1,4 +1,3 @@
-
 <script>
 import { AuthService } from "../../../public/services/auth.service.js";
 
@@ -116,7 +115,12 @@ export default {
 
 <template>
   <div class="bg-white">
-    <div class="mt-5 mx-3">
+    <!--<div class="mt-5 mx-3">
+      <router-link aria-label="go to login" to="/login" class="text-purple-500 text-sm">
+        <i class="pi pi-chevron-left" style="font-size: 2rem"></i>
+      </router-link>
+    </div>-->
+    <div class="back-button">
       <router-link aria-label="go to login" to="/login" class="text-purple-500 text-sm">
         <i class="pi pi-chevron-left" style="font-size: 2rem"></i>
       </router-link>
@@ -209,6 +213,18 @@ export default {
 </template>
 
 <style scoped>
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: transparent;
+  z-index: 10;
+}
+
+:deep(body) {
+  background-color: #F5F5F5 !important;
+}
+
 .p-button {
   border: 0;
 }
@@ -222,9 +238,3 @@ export default {
   font-size: 0.875rem;
 }
 </style>
-
-
-
-
-
-
