@@ -1,3 +1,25 @@
+<template>
+  <div class="min-h-screen p-4 flex items-center justify-center">
+    <div v-if="myCom" class="custom-card-container">
+      <CompanyMainPageComponent :company="myCom" />
+    </div>
+
+    <div v-else-if="hasError" class="status-card">
+      <div class="status-icon">⚠️</div>
+      <h3 class="status-title">Error al cargar los datos de la empresa</h3>
+      <p class="status-text">Hubo un problema al obtener la información. Por favor, intenta nuevamente.</p>
+      <button @click="reloadPage" class="status-button">
+        Volver a intentar
+      </button>
+    </div>
+
+    <div v-else class="status-card">
+      <div class="loading-spinner"></div>
+      <p class="status-text">Cargando datos de la empresa…</p>
+    </div>
+  </div>
+</template>
+
 <script>
 import CompanyMainPageComponent from "../components/company-main-page.component.vue";
 import { CompanyEntity } from "../../../shared/models/company.model.js";
@@ -10,23 +32,21 @@ export default {
     return {
       homeService: new HomeService(),
       myCom: null,
-      enterprise: null
+      enterprise: null,
+      hasError: false
     };
   },
   provide() {
     return {
-      // inyecta el enterpriseId para los hijos (projects-data)
-    enterpriseId: this.enterprise?.id
+      enterpriseId: this.enterprise?.id
     };
   },
   async created() {
     try {
       const userId = localStorage.getItem("user id");
-      // llamamos al endpoint /enterprises/user/{userId}
       const response = await this.homeService.getEnterpriseByUserId(userId);
       this.enterprise = response.data;
 
-      // construimos la entidad con los nombres de campo que devuelve la API
       this.myCom = new CompanyEntity(
           this.enterprise.id,
           this.enterprise.enterpriseName,
@@ -37,20 +57,100 @@ export default {
           this.enterprise.phone,
           this.enterprise.website,
           this.enterprise.sector,
-          [] // no viene el objeto User completo, dejamos array vacío
+          []
       );
-
-      localStorage.setItem('profile img', this.enterprise.profileImgUrl);
+      localStorage.setItem("profile img", data.profileImgUrl);
     } catch (err) {
-      console.error('Error al cargar los datos de la empresa', err);
+      console.error("Error al cargar los datos de la empresa", err);
+      this.hasError = true;
+    }
+  },
+  methods: {
+    reloadPage() {
+      window.location.reload();
     }
   }
 };
 </script>
 
-<template>
-  <div v-if="myCom">
-    <CompanyMainPageComponent :company="myCom"/>
-  </div>
-  <div v-else class="p-m-3">Cargando datos de la empresa…</div>
-</template>
+<style scoped>
+
+.min-h-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alinea el contenido hacia la parte superior */
+  align-items: center; /* Centra horizontalmente */
+}
+
+.custom-card-container {
+  max-width: 800px; /* Ajusta el tamaño máximo */
+  margin-top:-3.3rem; /* Ajusta la distancia desde la parte superior */
+  padding: 2rem; /* Espaciado interno */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+.status-card {
+  background: #ffffff; /* Fondo blanco puro */
+  border-radius: 16px; /* Bordes más redondeados para un diseño moderno */
+  padding: 8.75rem; /* Espaciado interno más equilibrado */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Sombra más suave y extendida */
+  border: 1px solid #dfe3e8; /* Color de borde más claro para menor contraste */
+  text-align: center;
+  max-width: 480px; /* Ancho máximo más amplio para mejor legibilidad */
+  margin: 2.5rem auto; /* Espaciado vertical uniforme */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación para interacción */
+}
+
+.status-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.status-title {
+  color: #e74c3c;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.5rem 0 1rem;
+}
+
+.status-text {
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.status-button {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.status-button:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
