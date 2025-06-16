@@ -39,8 +39,14 @@ export default {
 
 <template>
   <div class="bg-white">
-    <div class="mt-5 mx-3">
+    <!--<div class="mt-5 mx-3">
       <router-link aria-label="Go back to login" to="/login" class="text-purple-500 text-sm">
+        <i class="pi pi-chevron-left" style="font-size: 2rem"></i>
+      </router-link>
+    </div>*/-->
+
+    <div class="back-button">
+      <router-link aria-label="go to login" to="/login" class="text-purple-500 text-sm">
         <i class="pi pi-chevron-left" style="font-size: 2rem"></i>
       </router-link>
     </div>
@@ -95,6 +101,18 @@ export default {
 </template>
 
 <style scoped>
+:deep(body) {
+  background-color: #F5F5F5 !important;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: transparent; /* Fondo transparente */
+  z-index: 10; /* Asegura que esté encima de otros elementos */
+}
+
 .p-button {
   border: 0;
 }
@@ -112,5 +130,3 @@ export default {
   border-radius: 5rem;
 }
 </style>
-
-

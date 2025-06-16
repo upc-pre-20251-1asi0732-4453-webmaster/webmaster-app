@@ -77,11 +77,28 @@ export default {
   width: 30rem;
   min-width: 20rem;
   max-width: 30rem;
-  height: 800px;
-  margin: 4rem auto;
+  height: 625px; /* Reducir la altura total */
+  margin: 3.9rem auto; /* Reducir el margen superior e inferior */
   background: #f9fafb;
   box-shadow: 0 20px 40px rgb(57, 57, 57);
   border-radius: 12px;
+}
+
+.project-list {
+  max-height: 450px; /* Reducir la altura máxima de la lista */
+  overflow-y: auto;
+  padding-right: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem; /* Reducir el espacio entre las cards */
+}
+
+.project-card {
+  padding: 0.1rem; /* Reducir el espacio interno */
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .section-title {
@@ -92,22 +109,6 @@ export default {
   margin-bottom: 1.5rem;
 }
 
-.project-list {
-  max-height: 650px;
-  overflow-y: auto;
-  padding-right: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-.project-card {
-  padding: 1rem;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
 
 .project-card:hover {
   transform: translateY(-4px);
