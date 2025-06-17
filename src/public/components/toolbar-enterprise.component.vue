@@ -63,7 +63,9 @@ export default {
 
       <template #center>
         <div class="navbar-icon-center">
-          <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize" />
+          <router-link :to="`/main/${type}/${id}`">
+            <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize cursor-pointer"/>
+          </router-link>
         </div>
       </template>
 
@@ -91,13 +93,15 @@ export default {
   </div>
 
   <!-- Toolbar mobile -->
-  <div v-else class="flex flex-wrap justify-content-center">
+  <div v-else class="navbar-mobile-wrapper flex flex-wrap justify-content-center">
     <pv-toolbar
         style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.7); border: 2px solid white; padding: 0.75rem 1.5rem;"
         class="my-4 w-full"
     >
       <template #start>
-        <img src="https://i.imgur.com/DOPLKzN.png" alt="logo" class="imgsize" />
+        <router-link :to="`/main/${type}/${id}`">
+          <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize cursor-pointer"/>
+        </router-link>
       </template>
 
       <template #end>
@@ -105,20 +109,19 @@ export default {
           <i class="pi pi-bars" style="font-size: 2.2rem;"></i>
         </pv-button>
 
-        <pv-sidebar v-model:visible="visibleRight" header="Opciones" position="right" class="flex flex-column gap-6 p-4">
-          <router-link to="/home" class="p-mb-3">
+        <pv-sidebar v-model:visible="visibleRight" header="Opciones" position="right"
+                    class="flex flex-column gap-6 p-4">
+          <router-link :to="`/main/${type}/${id}`">
             <pv-button text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option5') }}</h3></pv-button>
           </router-link>
-          <router-link to="/message-page" class="p-mb-3">
+          <router-link to="/message">
             <pv-button text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option2') }}</h3></pv-button>
-          </router-link>
-          <router-link :to="`/main/${type}/${id}`" class="p-mb-3">
-            <pv-button text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option5') }}</h3></pv-button>
           </router-link>
           <router-link to="/search-developer" class="p-mb-3">
             <pv-button text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option1') }}</h3></pv-button>
           </router-link>
-          <pv-button @click="logout" text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option4') }}</h3></pv-button>
+          <pv-button @click="logout" text plain class="w-full"><h3>{{ $t('toolbar-enterprise-option4') }}</h3>
+          </pv-button>
           <pv-select-button
               v-model="$i18n.locale"
               :options="languages"
@@ -159,4 +162,15 @@ export default {
   display: flex !important;
   justify-content: center;
 }
+
+.navbar-mobile-wrapper {
+  padding: 0 1rem; /* margen lateral solo para mobile */
+}
+
+@media screen and (min-width: 769px) {
+  .navbar-mobile-wrapper {
+    padding: 0; /* quita el padding en desktop */
+  }
+}
+
 </style>
