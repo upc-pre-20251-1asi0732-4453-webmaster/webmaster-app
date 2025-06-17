@@ -60,11 +60,19 @@ export default {
 </script>
 
 <template>
-  <div class="flex justify-content-center flex-wrap">
-    <apply-project v-if="myProject" :project="myProject"/>
+  <div class="page-wrapper">
+    <div class="flex justify-content-center flex-wrap">
+      <apply-project v-if="myProject" :project="myProject"/>
+    </div>
   </div>
 </template>
 
-<style>
-
+<style scoped>
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh; /* Ajusta según el tamaño de tu footer */
+  justify-content: center;
+  padding: 2rem 1rem;
+}
 </style>
