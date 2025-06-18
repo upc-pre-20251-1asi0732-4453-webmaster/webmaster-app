@@ -53,12 +53,12 @@ export default {
           </pv-button>
         </router-link>
 
-        <router-link to="/message">
-          <pv-button text plain class="responsive-button justify-content-center">
-            <i class="pi pi-envelope" style="font-size: 1.3rem;"></i>
-            <span>{{ $t('toolbar-enterprise-option2') }}</span>
-          </pv-button>
-        </router-link>
+        //<router-link to="/message">
+        //  <pv-button text plain class="responsive-button justify-content-center">
+        //    <i class="pi pi-envelope" style="font-size: 1.3rem;"></i>
+        //    <span>{{ $t('toolbar-enterprise-option2') }}</span>
+        //  </pv-button>
+        //</router-link>
       </template>
 
       <template #center>
