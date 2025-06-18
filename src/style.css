@@ -6,7 +6,7 @@
 }
 body {
   background: rgb(0, 33, 73);
-  background: linear-gradient(180deg, rgba(0, 33, 73, 1) 22%, rgba(0, 42, 94, 1) 59%, rgba(0, 75, 167, 1) 82%, rgba(0, 114, 255, 1) 100%);
+  background: linear-gradient(295.79deg, #5C429E 23%, #0049A4 49.76%, #002149 86.96%);
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
@@ -14,15 +14,3 @@ body {
   overflow-x: hidden;
   margin: 0;
 }
-
-.triangle {
-  width: 521.5px;
-  height: 386px;
-  background: conic-gradient(from -13.54deg at 68.36% 69.69%, #B864F3 -37.72deg, #0072FF 62.28deg, #002149 124.67deg, #002149 237.72deg, #D599FF 313.08deg, #B864F3 322.28deg, #0072FF 422.28deg);
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: -1;
-  clip-path: polygon(100% 0, 100% 100%, 0 0);
-}
-/* Polygon 20 */

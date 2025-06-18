@@ -65,7 +65,9 @@ export default {
       <!-- 3. Logo central (decorativo) -->
       <template #center>
         <div class="navbar-icon-center">
-          <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize" />
+          <router-link :to="`/main/${type}/${id}`">
+            <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize cursor-pointer"/>
+          </router-link>
         </div>
       </template>
 
@@ -95,13 +97,15 @@ export default {
   </div>
 
   <!-- Toolbar mobile (sidebar) -->
-  <div v-else class="flex flex-wrap justify-content-center">
+  <div v-else class="navbar-mobile-wrapper flex flex-wrap justify-content-center">
     <pv-toolbar
         style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.8); border: 2px solid white; padding: 0.75rem 1.5rem;"
         class="my-4 w-full"
     >
       <template #start>
-        <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize" />
+        <router-link :to="`/main/${type}/${id}`">
+          <img src="https://i.imgur.com/DOPLKzN.png" alt="Logo" class="imgsize cursor-pointer"/>
+        </router-link>
       </template>
       <template #end>
         <pv-button @click="visibleRight = true" class="bg-blue-600">
@@ -171,4 +175,15 @@ export default {
   display: flex !important;
   justify-content: center;
 }
+
+.navbar-mobile-wrapper {
+  padding: 0 1rem; /* margen lateral solo para mobile */
+}
+
+@media screen and (min-width: 769px) {
+  .navbar-mobile-wrapper {
+    padding: 0; /* quita el padding en desktop */
+  }
+}
+
 </style>

@@ -21,6 +21,10 @@ export default {
 
       // Mensaje que estamos escribiendo
       newMessage: "",
+
+      // Nuevas propiedades para la responsividad
+      isMobileView: false,
+      showContactList: true, // true: muestra lista de contactos, false: muestra el chat
     };
   },
   computed: {
@@ -38,6 +42,29 @@ export default {
     }
   },
   methods: {
+    // *** Nuevos métodos para responsividad ***
+    checkMobile() {
+      this.isMobileView = window.innerWidth <= 768; // Define tu breakpoint móvil aquí
+      // Si la vista es móvil y ya hay un contacto seleccionado, oculta la lista de contactos
+      if (this.isMobileView && this.selectedContactId) {
+        this.showContactList = false;
+      } else {
+        this.showContactList = true; // Si no es móvil o no hay contacto, siempre muestra la lista
+      }
+    },
+    selectContact(id) {
+      this.selectedContactId = id;
+      if (this.isMobileView) {
+        this.showContactList = false; // Oculta la lista y muestra el chat en móvil
+      }
+      this.loadMessagesForSelectedContact(); // Llama a una nueva función para cargar mensajes
+    },
+    goBackToContacts() {
+      this.showContactList = true; // Vuelve a mostrar la lista de contactos
+      this.selectedContactId = null; // Opcional: deseleccionar el contacto
+    },
+    // *** Fin de nuevos métodos para responsividad ***
+
     async downloadFile(message) {
       try {
         if (!message.fileUrl) {
@@ -148,12 +175,19 @@ export default {
         // Aquí puedes mostrar un mensaje de error al usuario
       }
     },
-    async selectContact(id) {
-      this.selectedContactId = id;
-      let contact = this.contacts.find(c => c.id === id);
+    async loadMessagesForSelectedContact() { // Nueva función para cargar mensajes
+      if (!this.selectedContactId) {
+        this.currentMessages = [];
+        return;
+      }
+      let contact = this.contacts.find(c => c.id === this.selectedContactId);
+      if (!contact) {
+        this.currentMessages = [];
+        return;
+      }
 
       let senderId = parseInt(localStorage.getItem('user id'));
-      let recipientId = contact.userId; // Asume que cada contacto tiene un userId
+      let recipientId = contact.userId;
 
       try {
         let messages = await messengerService.getMessagesByUsers(senderId, recipientId);
@@ -164,17 +198,17 @@ export default {
             content: msg.content,
             time: new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
             isMine: msg.senderId === senderId,
-            isFile: !!msg.fileUrl, // si tiene URL, es archivo
+            isFile: !!msg.fileUrl,
             fileName: msg.fileName || msg.content || 'archivo',
             fileUrl: msg.fileUrl || '',
           }));
           console.log("Mensajes recibidos del backend:", messages);
         } else {
-          this.currentMessages = []; // Limpiar la vista de mensajes si no hay ninguno
+          this.currentMessages = [];
         }
       } catch (error) {
         console.error("Error al cargar mensajes:", error);
-        this.currentMessages = []; // Asegúrate de limpiar en caso de error también
+        this.currentMessages = [];
       }
 
       this.$nextTick(() => {
@@ -195,26 +229,26 @@ export default {
         ...c
       }));
 
-      // Si hay contactos, seleccionamos el primero y cargamos sus mensajes
       if (this.contacts.length > 0) {
-        // Establecer el ID del primer contacto
         this.selectedContactId = this.contacts[0].id;
-        // Llamar a selectContact para cargar sus mensajes
-        await this.selectContact(this.contacts[0].id);
+        await this.loadMessagesForSelectedContact(); // Cargar mensajes del primer contacto
       }
     }
   },
   async mounted() {
-    // Al montar el componente, cargamos los contactos
     await this.loadContacts();
-    // scrollToBottom ya se llama dentro de selectContact, así que no es necesario aquí de nuevo
+    this.checkMobile(); // Verificar estado móvil al montar
+    window.addEventListener('resize', this.checkMobile); // Escuchar cambios de tamaño de ventana
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkMobile); // Limpiar el listener al destruir
+  }
 };
 </script>
 
 <template>
   <div class="chat-container">
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ 'mobile-hidden': !showContactList }">
       <div class="search-bar">
         <input type="text" v-model="searchQuery" placeholder="Busca conversaciones..."/>
       </div>
@@ -240,9 +274,15 @@ export default {
       </ul>
     </aside>
 
-    <section class="chat-area">
+    <section class="chat-area" :class="{ 'mobile-hidden': showContactList }">
       <header class="chat-header" v-if="currentContact">
         <div class="header-left">
+          <button v-if="isMobileView" @click="goBackToContacts" class="btn-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+          </button>
           <img :src="currentContact.avatar" class="header-avatar" alt="Avatar"/>
           <div class="header-info">
             <p class="header-name">{{ currentContact.name }}</p>
@@ -282,7 +322,6 @@ export default {
               <span class="file-name">{{ message.fileName }}</span>
               <button class="btn-download-icon" @click="downloadFile(message)" aria-label="Descargar archivo"
                       title="Descargar">
-                <!-- Icono de descarga -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                   <path
                       d="M.5 9.9v3.6A1.5 1.5 0 0 0 2 15h12a1.5 1.5 0 0 0 1.5-1.5v-3.6a.5.5 0 0 0-1 0v3.6a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-3.6a.5.5 0 0 0-1 0z"/>
@@ -310,7 +349,6 @@ export default {
       </div>
 
       <footer class="chat-input" v-if="currentContact">
-        <!-- Botón clip con input oculto -->
         <button class="btn-attach" @click="triggerFileInput">📎</button>
         <input
             type="file"
@@ -344,6 +382,9 @@ export default {
   width: 70vw;
   font-family: "Arial", sans-serif;
   margin: 0 auto;
+  border-radius: 16px; /* Borde redondeado para el contenedor principal */
+  overflow: hidden; /* Asegura que los hijos con bordes redondeados se vean bien */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para darle un toque flotante */
 }
 
 /* ---------------------- Sidebar ---------------------- */
@@ -353,10 +394,9 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
+  /* Eliminamos los border-radius individuales, se manejará por el contenedor padre */
   overflow: hidden;
-
+  transition: all 0.3s ease-in-out; /* Transición suave para ocultar/mostrar */
 }
 
 /* Barra de búsqueda */
@@ -369,7 +409,9 @@ export default {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 20px; /* Bordes más redondeados */
+  box-sizing: border-box; /* Incluir padding en el ancho */
+  font-size: 14px;
 }
 
 /* Lista de contactos */
@@ -384,54 +426,79 @@ export default {
 .contact-item {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 12px 10px; /* Ajuste de padding */
   cursor: pointer;
   position: relative;
   transition: background 0.2s;
+  border-bottom: 1px solid #eee; /* Separador entre contactos */
+}
+
+.contact-item:last-child {
+  border-bottom: none; /* Eliminar borde del último item */
 }
 
 .contact-item:hover {
-  background: #f5f5f5;
+  background: #f0f2f5; /* Color de hover más suave */
 }
 
 .contact-item.active {
   background: #e6f7ff;
+  border-left: 4px solid #007bff; /* Indicador de selección */
+  padding-left: 6px; /* Ajuste para el borde */
 }
 
 /* Avatar e indicador de online */
 .avatar-wrapper {
   position: relative;
+  flex-shrink: 0; /* Evita que el avatar se encoja */
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px; /* Tamaño un poco más grande */
+  height: 48px;
   border-radius: 50%;
+  object-fit: cover; /* Asegura que la imagen no se distorsione */
 }
 
+.online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #4CAF50; /* Verde online */
+  border-radius: 50%;
+  border: 2px solid white; /* Borde blanco para visibilidad */
+}
 
 /* Información del contacto */
 .contact-info {
   flex: 1;
   margin-left: 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Apila nombre y último mensaje */
+  justify-content: center;
+  overflow: hidden; /* Oculta el texto que se desborda */
 }
 
 .contact-name {
   margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  font-size: 15px; /* Tamaño de fuente ligeramente más grande */
+  font-weight: 600; /* Más negrita */
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Puntos suspensivos para texto largo */
 }
 
 .unread-badge {
   background: #f44336;
   color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-size: 11px; /* Tamaño más pequeño */
+  padding: 3px 7px;
+  border-radius: 12px; /* Más redondeado */
+  margin-top: 4px; /* Espacio entre nombre y badge */
+  align-self: flex-end; /* Alinea a la derecha del info */
 }
 
 /* ---------------------- Chat Area ---------------------- */
@@ -439,10 +506,10 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  /* Eliminamos los border-radius individuales, se manejará por el contenedor padre */
   overflow: hidden;
-
+  background: #fbfbfb; /* Fondo ligeramente diferente */
+  transition: all 0.3s ease-in-out; /* Transición suave para ocultar/mostrar */
 }
 
 /* Header del chat */
@@ -452,7 +519,9 @@ export default {
   align-items: center;
   padding: 10px 15px;
   border-bottom: 1px solid #ddd;
-  background: #f9f9f9;
+  background: #ffffff; /* Fondo blanco */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+  flex-shrink: 0; /* Evita que el header se encoja */
 }
 
 .header-left {
@@ -460,31 +529,52 @@ export default {
   align-items: center;
 }
 
+/* Botón de regresar */
+.btn-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 10px;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-back svg {
+  width: 24px;
+  height: 24px;
+}
+
 .header-avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px; /* Tamaño ligeramente más grande */
+  height: 45px;
   border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
 }
 
 .header-info {
-  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .header-name {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #333;
 }
 
 .header-status {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: #666;
 }
 
 .header-actions .dot-menu {
-  font-size: 20px;
+  font-size: 24px; /* Tamaño del icono */
   color: #666;
   cursor: pointer;
 }
@@ -495,45 +585,61 @@ export default {
   padding: 15px;
   overflow-y: auto;
   background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  /* Para que los mensajes aparezcan desde abajo */
+  justify-content: flex-end;
+  min-height: 0; /* Importante para flexbox */
 }
+
+/* Mensaje si no hay mensajes */
+.no-messages, .no-messages-selected {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+}
+
 
 /* Burbuja de mensaje */
 .message-bubble {
-  max-width: 60%;
-  margin-bottom: 10px;
+  max-width: 75%; /* Aumenta el ancho máximo de la burbuja */
+  margin-bottom: 12px; /* Más espacio entre burbujas */
   position: relative;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 10px 14px; /* Ajuste de padding */
+  border-radius: 18px; /* Más redondeado */
   word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); /* Sombra sutil en burbujas */
 }
 
 /* Mensaje propio (alineado a la derecha) */
 .sent {
-  background: #cef5d9;
+  background: linear-gradient(to right, #cef5d9, #c0edc8); /* Gradiente suave */
   margin-left: auto;
-  border-bottom-right-radius: 0;
+  border-bottom-right-radius: 4px; /* Un poco menos redondeado en la esquina inferior-derecha */
 }
 
 /* Mensaje recibido (alineado a la izquierda) */
 .received {
-  background: white;
+  background: linear-gradient(to right, #ffffff, #f0f0f0); /* Gradiente suave */
   margin-right: auto;
-  border-bottom-left-radius: 0;
+  border-bottom-left-radius: 4px; /* Un poco menos redondeado en la esquina inferior-izquierda */
 }
 
 /* Contenido del mensaje */
 .message-content {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px; /* Tamaño de fuente ligeramente más grande */
   color: #333;
+  line-height: 1.4; /* Espaciado entre líneas */
 }
 
 /* Hora del mensaje */
 .message-time {
   display: block;
   font-size: 11px;
-  color: #999;
-  margin-top: 4px;
+  color: #777; /* Color más oscuro */
+  margin-top: 6px; /* Más espacio */
   text-align: right;
 }
 
@@ -541,52 +647,72 @@ export default {
 .chat-input {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 15px; /* Ajuste de padding */
   border-top: 1px solid #ddd;
   background: #fff;
+  flex-shrink: 0; /* Evita que el footer se encoja */
 }
 
 .chat-input input[type="text"] {
   flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 8px 12px;
-  font-size: 14px;
+  border: 1px solid #e0e0e0; /* Color de borde más suave */
+  border-radius: 25px; /* Más redondeado */
+  padding: 10px 15px;
+  font-size: 15px;
   margin: 0 8px;
   outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input input[type="text"]:focus {
+  border-color: #007bff; /* Borde azul al enfocar */
 }
 
 .btn-attach,
 .btn-send {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 22px; /* Iconos más grandes */
   cursor: pointer;
+  padding: 8px; /* Área de clic más grande */
+  border-radius: 50%; /* Botones circulares */
+  transition: background-color 0.2s ease;
 }
 
 .btn-attach {
-  color: #555;
+  color: #777; /* Color más suave */
+}
+
+.btn-attach:hover {
+  background-color: #f0f0f0;
 }
 
 .btn-send {
   color: #007bff;
 }
 
-.btn-download {
-  margin-left: 10px;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
+.btn-send:hover {
+  background-color: #e6f7ff;
 }
 
-.btn-download:hover {
-  background-color: #0056b3;
+/* Estilo para el input deshabilitado */
+.chat-input-disabled {
+  padding: 10px 15px;
+  border-top: 1px solid #ddd;
+  background: #f0f0f0;
+  text-align: center;
 }
 
+.chat-input-disabled input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  background-color: #e9e9e9;
+  color: #888;
+  cursor: not-allowed;
+  text-align: center;
+}
 
 .message-content {
   display: flex;
@@ -617,11 +743,98 @@ export default {
   padding: 4px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Evita que el botón se encoja */
 }
 
 .btn-download-icon:hover {
   background-color: #d0e3ff;
 }
 
+/* ---------------------- Media Queries ---------------------- */
 
+@media (max-width: 768px) {
+  .chat-container {
+    width: 95vw; /* Ocupa casi todo el ancho en móvil */
+    height: 90vh; /* Ocupa más altura */
+    flex-direction: row; /* Mantener la dirección de fila para controlar el display */
+    border-radius: 0; /* Sin bordes redondeados en móvil para ocupar toda la pantalla */
+    box-shadow: none; /* Sin sombra en móvil */
+  }
+
+  .sidebar {
+    width: 100%; /* Ocupa todo el ancho cuando está visible */
+    border-right: none;
+    border-radius: 0; /* Sin bordes redondeados */
+  }
+
+  .chat-area {
+
+    width: 100%; /* Ocupa todo el ancho cuando está visible */
+    border-radius: 16px; /* Sin bordes redondeados */
+  }
+
+  /* Clases para ocultar/mostrar elementos en móvil */
+  .mobile-hidden {
+    display: none; /* Oculta completamente el elemento */
+  }
+
+  /* Ajuste para el header en vista móvil */
+  .chat-header .header-left {
+    justify-content: flex-start; /* Alinea los elementos a la izquierda */
+  }
+
+  .btn-back {
+    display: flex; /* Asegura que el botón de regresar se muestre en móvil */
+  }
+}
+
+/* Estilos para pantallas muy pequeñas (ej. 320px) */
+@media (max-width: 480px) {
+  .chat-header {
+    padding: 8px 10px;
+  }
+
+  .header-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-name {
+    font-size: 16px;
+  }
+
+  .chat-input input[type="text"] {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .btn-attach,
+  .btn-send {
+    font-size: 20px;
+    padding: 6px;
+  }
+
+  .message-bubble {
+    max-width: 85%; /* Más espacio para mensajes en pantallas muy pequeñas */
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .message-time {
+    font-size: 10px;
+  }
+
+  .contact-item {
+    padding: 10px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .contact-name {
+    font-size: 14px;
+  }
+}
 </style>
