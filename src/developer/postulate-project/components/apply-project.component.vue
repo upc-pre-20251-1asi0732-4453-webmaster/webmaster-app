@@ -224,8 +224,9 @@ export default {
           <p class="apply-subtitle">
             Postúlate ahora y comienza a trabajar en este increíble proyecto
           </p>
-          <pv-button @click="showTemplate()" :label="$t('apply-project-part8')" class="apply-btn" size="large">
+          <pv-button @click="showTemplate()" :label="$t('apply-project-part8')" class="apply-btn">
             <i class="pi pi-send mr-2"></i>
+            <p>Postular</p>
           </pv-button>
         </div>
 
@@ -588,7 +589,7 @@ export default {
   background: white;
   color: #2d3748;
   border: none;
-  padding: 1rem 2rem;
+  padding:5px 20px;
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 15px;
@@ -598,7 +599,7 @@ export default {
 .apply-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  background: #f7fafc;
+  background: #b1b0b0;
 }
 
 .already-applied {
