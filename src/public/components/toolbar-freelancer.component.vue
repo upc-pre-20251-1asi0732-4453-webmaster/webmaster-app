@@ -149,8 +149,22 @@ export default {
 <style scoped>
 .responsive-button {
   font-size: 1.1rem;
+  border: white;
+  background-color: transparent;
   color: white;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-bottom 0.3s ease, transform 0.3s ease;
+  gap:0.5rem;
 }
+
+.responsive-button:hover {
+  text-decoration: underline;
+  text-decoration-color: white;
+  text-underline-offset: 10px;
+  transform: translateY(-3px);
+}
+
 
 @media screen and (max-width: 768px) {
   .responsive-button {

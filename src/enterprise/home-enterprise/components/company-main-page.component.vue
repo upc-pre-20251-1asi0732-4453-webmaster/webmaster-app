@@ -169,9 +169,11 @@ export default {
       const isSectorValid = validateSector(categoryTexts.value[4]);
 
       // Si todos los campos son válidos
+      let email = localStorage.getItem("user email");
       if (isSummaryValid && isCountryValid && isRUCValid && isPhoneValid && isWebsiteValid && isSectorValid) {
         const updatedInfo = {
           enterpriseName: props.company.enterprise_name,
+          enterpriseEmail: email,
           description: mainText.value,
           country: categoryTexts.value[0],
           ruc: categoryTexts.value[1],
@@ -291,15 +293,17 @@ export default {
             throw new Error('Formato de imagen no válido. Use JPG, PNG o GIF');
           }
 
-          const filePath = `profiles/profile_enterprise_${enterpriseId.value}.${fileExtension}`;
+          const filePath = `profiles/profile_enterprise_${userId}.${fileExtension}`;
           await uploadFile("webmasterprofiles", filePath, selectedFile.value);
           const publicUrl = `${getPublicUrl("webmasterprofiles", filePath)}?t=${Date.now()}`;
           newImgUrl.value = publicUrl;
         }
 
+        let email = localStorage.getItem("user email");
         if (newImgUrl.value) {
           const updatedInfo = {
             enterpriseName: props.company.enterprise_name,
+            enterpriseEmail: email,
             description: mainText.value,
             country: categoryTexts.value[0],
             ruc: categoryTexts.value[1],
@@ -384,7 +388,7 @@ export default {
         />
         <div class="edit-overlay" :class="{ visible: isHoveringImage }">
           <i class="pi pi-camera edit-icon"></i>
-          <span class="edit-text">Editar foto</span>
+          <span class="edit-text">Edit photo</span>
         </div>
       </div>
       <div aria-label="Company Name">

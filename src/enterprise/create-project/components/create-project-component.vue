@@ -10,7 +10,7 @@
           <pv-inputText
               v-else
               v-model="titleText"
-              placeholder="Nombre del proyecto"
+              placeholder="Project name"
               class="editable-input"
           />
           <pv-button
@@ -37,11 +37,11 @@
       <template #content>
         <!-- Descripción -->
         <div class="form-group">
-          <label for="project-description">Descripción</label>
+          <label for="project-description">Description</label>
           <pv-textarea
               id="project-description"
               v-model="descriptionText"
-              placeholder="Descripción del proyecto"
+              placeholder="Project description"
               class="form-input"
               autoResize
           />
@@ -51,14 +51,14 @@
 
         <!-- Lenguajes -->
         <div class="form-group">
-          <label for="project-languages">Lenguajes</label>
+          <label for="project-languages">Languages</label>
           <pv-multi-select
               id="project-languages"
               v-model="selectedLanguages"
               :options="languages"
               option-value="id"
               option-label="name"
-              placeholder="Selecciona lenguajes"
+              placeholder="Select languages"
               class="form-input"
           />
         </div>
@@ -72,28 +72,28 @@
               :options="frameworks"
               option-value="id"
               option-label="name"
-              placeholder="Selecciona frameworks"
+              placeholder="Select frameworks"
               class="form-input"
           />
         </div>
 
         <!-- Tipo de proyecto -->
         <div class="form-group">
-          <label for="project-type">Tipo de proyecto</label>
+          <label for="project-type">Project Type</label>
           <pv-drop-down
               id="project-type"
               v-model="selectedType"
               :options="typeOptions"
               option-value="value"
               option-label="label"
-              placeholder="Selecciona tipo"
+              placeholder="Select type"
               class="form-input"
           />
         </div>
 
         <!-- Presupuesto -->
         <div class="form-group">
-          <label for="project-budget">Presupuesto</label>
+          <label for="project-budget">Budget</label>
           <pv-inputText
               id="project-budget"
               v-model="budget"
@@ -104,7 +104,7 @@
 
         <!-- Metodologías -->
         <div class="form-group">
-          <label for="project-methodologies">Metodologías</label>
+          <label for="project-methodologies">Methodologies</label>
           <pv-inputText
               id="project-methodologies"
               v-model="methodologies"
@@ -119,7 +119,7 @@
         <!-- Botón publicar -->
         <div class="form-group">
           <pv-button
-              label="Crear proyecto"
+              label="Create Project"
               class="submit-button"
               @click="publishProject"
           />
@@ -137,8 +137,8 @@ export default {
   data() {
     return {
       isEditingTitle: false,
-      titleText: "Nombre del proyecto",
-      descriptionText: "Descripción del proyecto",
+      titleText: "Project name",
+      descriptionText: "Project description",
 
       languages: [
         { id: 1, name: "Java" },
@@ -181,24 +181,24 @@ export default {
     validate() {
       // Validaciones generales
       const title = this.titleText.trim();
-      if (!title) return "El nombre es obligatorio.";
-      if (title.length < 10) return "El nombre debe tener al menos 10 caracteres.";
+      if (!title) return "Name is required.";
+      if (title.length < 10) return "Name must be at least 10 characters long.";
 
       const desc = this.descriptionText.trim();
-      if (!desc) return "La descripción es obligatoria.";
-      if (desc.length < 20) return "La descripción debe tener al menos 20 caracteres.";
+      if (!desc) return "Description is required.";
+      if (desc.length < 20) return "Description must be at least 20 characters long.";
 
-      if (!this.selectedLanguages.length) return "Selecciona al menos un lenguaje.";
-      if (!this.selectedFrameworks.length) return "Selecciona al menos un framework.";
+      if (!this.selectedLanguages.length) return "Select at least one language.";
+      if (!this.selectedFrameworks.length) return "Select at least one framework.";
 
       const budget = this.budget.trim();
-      if (!budget) return "El presupuesto es obligatorio.";
-      if (!/^\d+(?:\.\d+)?$/.test(budget)) return "El presupuesto debe ser un número válido sin letras.";
-      if (parseFloat(budget) < 0) return "El presupuesto no puede ser negativo.";
+      if (!budget) return "Budget is required.";
+      if (!/^\d+(?:\.\d+)?$/.test(budget)) return "Budget must be a valid number without letters.";
+      if (parseFloat(budget) < 0) return "Budget cannot be negative.";
 
       const meth = this.methodologies.trim();
-      if (!meth) return "Las metodologías son obligatorias.";
-      if (meth.length < 2) return "Las metodologías deben tener al menos 2 caracteres.";
+      if (!meth) return "Methodologies are required.";
+      if (meth.length < 2) return "Methodologies must be at least 2 characters long.";
 
       return null;
     },
@@ -213,7 +213,7 @@ export default {
       const payload = {
         name: this.titleText,
         description: this.descriptionText,
-        ownerId: parseInt(localStorage.getItem("user id"), 10),
+        ownerId: localStorage.getItem("user id"),
         languages: this.selectedLanguages,
         frameworks: this.selectedFrameworks,
         type: this.selectedType,

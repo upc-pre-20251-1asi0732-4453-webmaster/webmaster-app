@@ -18,16 +18,25 @@ export default {
     triggerUpload() {
       if (this.developerDescription.length < 20) {
         this.summaryError = true;
-      } else {
-        this.summaryError = false;
-        this.uploadFile();
+        return;
       }
+
+      if (!this.file) {
+        alert("Debes subir un archivo antes de enviar el deliverable.");
+        return;
+      }
+
+      this.summaryError = false;
+      this.uploadFile();
     },
+
     onFileSelect(event) {
-      const file = event.files[0];
+     // just one file, the first one to be dragged or seleected is the one that will be uploaded
+      const file = Array.isArray(event.files) ? event.files[0] : event.files;
       this.file = file;
       this.uploadedFiles = [file];
     },
+
 
     redirectToDeliverables() {
       const projectId = this.$route.params.projectId;
@@ -116,14 +125,14 @@ export default {
             <pv-file-upload
                 class="large-fileupload"
                 name="demo[]"
-                mode="advanced"
+                mode="basic"
                 :multiple="false"
                 :maxFileSize="26214400"
                 accept=".pdf,.doc,.docx,.rar,.zip,.png,.jpg,.jpeg"
                 @select="onFileSelect"
             >
               <template #empty>
-                <div v-for="(file, index) in uploadedFiles" :key="index">
+                <div v-if="file">
                   <p>{{ file.name }}</p>
                 </div>
                 <p>{{ $t('create-project-part10') }}</p>

@@ -1,66 +1,61 @@
+```vue
 <script>
+import { ref, onMounted } from "vue";
 import ProjectsPanelComponent from "../components/projects-panel.component.vue";
-import { HomeService } from "../../../../public/services/home.service.js";
 import { ProjectService } from "../../../../public/services/project.service.js";
 import { ProjectEntity } from "../../../shared/models/project.model.js";
 
 export default {
   name: "projects-data",
   components: { ProjectsPanelComponent },
-  data() {
-    return {
-      homeService: new HomeService(),
-      projectService: new ProjectService(),
-      projectsData: [],
-      myProjects: []
-    };
-  },
-  async created() {
-    // read the enterpriseId set in company-data
-    const userId = Number(localStorage.getItem('user id'));
-    if (userId) {
-      try {
-        this.projectsData = await this.projectService.getProjectByDeveloper(userId);
-        console.log('Projects data:', this.projectsData);
-        this.buildProjects();
-      } catch (err) {
-        console.error('Failed loading projects for enterprise', err);
-      }
-    } else {
-      console.warn('No enterpriseId found in localStorage');
-    }
-  },
-  methods: {
-    buildProjects() {
-      this.myProjects = this.projectsData.map(p => new ProjectEntity({
-        project_ID: p.id,
-        nameProject: p.name,
-        type: p.type,
-        descriptionProject: p.description,
-        languages: p.languages,
-        frameworks: p.frameworks,
-        budget: p.budget,
-       // budgetDescription: p.budgetDescription || '',
-        methodologies: p.methodologies,
-        enterprise_id: p.ownerId,
-        applicants_id: p.candidatesList?.map(c => c.id) || [],
-        developer_id: p.developerId,
-        stateProject: p.state,
-        projectProgressBar: p.progress,
-        started: p.started || false //
-      }));
+  setup() {
+    const myProjects = ref([]);
+    const projectService = new ProjectService();
 
-      console.log('My projects:', this.myProjects);
-    }
+    const loadProjects = async () => {
+      const userId = localStorage.getItem("user id");
+      console.log("USER ID:", userId);
+      if (!userId) {
+        console.warn("No userId found in localStorage");
+        return;
+      }
+      try {
+        const projectsData = await projectService.getProjectByDeveloper(userId);
+        console.log("Projects data:", projectsData);
+
+        myProjects.value = projectsData.map(p => new ProjectEntity({
+          project_ID:         p.id,
+          nameProject:        p.name,
+          descriptionProject: p.description,
+          stateProject:       p.state,
+          projectProgressBar: p.progress,
+          enterprise_id:      p.enterprise,
+          developer_id:       p.developerId || null,
+          applicantsList:     p.candidates || [],
+          type:               p.type,
+          budget:             p.budget,
+          methodologies:      p.methodologies,
+        }));
+
+        console.log("My projects:", myProjects.value);
+      } catch (err) {
+        console.error("Failed loading projects for enterprise", err);
+      }
+    };
+
+    onMounted(loadProjects);
+
+    return { myProjects };
   }
 };
 </script>
 
 <template>
   <div v-if="myProjects">
-    <ProjectsPanelComponent :projects="myProjects"/>
+    <ProjectsPanelComponent :projects="myProjects" />
   </div>
 </template>
 
 <style scoped>
 </style>
+```

@@ -24,12 +24,12 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 5rem;
   margin-bottom: 6rem;
-  padding: 0 1rem; /* margen lateral en pantallas pequeñas */
-  box-sizing: border-box; /* asegura que padding no cause overflow */
-  width: 100%; /* ocupa todo el ancho disponible */
-  max-width: 100vw; /* previene que se pase del ancho de la ventana */
-  overflow-x: hidden; /* como última defensa */
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 </style>

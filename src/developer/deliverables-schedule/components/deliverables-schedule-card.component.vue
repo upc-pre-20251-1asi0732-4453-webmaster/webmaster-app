@@ -57,20 +57,20 @@ export default {
           </div>
           <div aria-label="Status Information" class='flex flex-column '>
             <div class="flex flex-column align-items-center -mt-2 ml-5 ">
-              <span v-if="deliverable.state === 'Aprobado'" class="pi pi-check-circle" style="font-size: 2rem; color: green;"></span>
-              <span v-else-if="deliverable.state === 'En espera de revisión'" class="pi pi-info-circle" style="font-size: 2rem; color: purple;"></span>
-              <span v-else-if="deliverable.state === 'Rechazado'" class="pi pi-times-circle" style="font-size: 2rem; color: red;"></span>
+              <span v-if="deliverable.state === 'APPROVED'" class="pi pi-check-circle" style="font-size: 2rem; color: green;"></span>
+              <span v-else-if="deliverable.state === 'WAITING'" class="pi pi-info-circle" style="font-size: 2rem; color: purple;"></span>
+              <span v-else-if="deliverable.state === 'REJECTED'" class="pi pi-times-circle" style="font-size: 2rem; color: red;"></span>
               <span v-else class="pi pi-chevron-circle-down" style="font-size: 2rem"></span>
             </div>
             <div class="flex flex-column align-items-center card text-center -mt-3 ml-5">
-              <span v-if="deliverable.state === 'Aprobado'" >
+              <span v-if="deliverable.state === 'APPROVED'" >
                 <br>
                 {{ $t('approved') }}
               </span>
               <span v-else-if="deliverable.state === 'WAITING'" >
                 <br>{{ $t('pending') }}
               </span>
-              <span v-else-if="deliverable.state === 'Rechazado'">
+              <span v-else-if="deliverable.state === 'REJECTED'">
                 <br>{{ $t('rejected') }}
               </span>
               <span v-else>

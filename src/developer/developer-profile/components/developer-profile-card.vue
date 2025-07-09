@@ -5,7 +5,7 @@ export default {
   name: "developer-profile-card",
   data() {
     return {
-      categories: ['categories.country', 'categories.phone', 'categories.email', 'categories.projectsFinished', 'categories.specialties'],
+      categories: ['categories.country', 'categories.phone', 'categories.email', 'categories.specialties'],
       categoryTexts: [],
     }
   },
@@ -27,11 +27,10 @@ export default {
         this.categoryTexts = [
           this.developer.country,
           this.developer.phone,
-          this.developer.completed_projects,
+          this.developer.developerEmail,
           this.developer.specialties
         ];
-        console.log(this.categoryTexts);
-        console.log(this.developer);
+
       }
     }
   }
@@ -46,11 +45,8 @@ export default {
         <pv-avatar :image="developer.profileImgUrl" class="mr-2" size="xlarge" shape="circle" aria-label="Developer Avatar" />
         <div aria-label="Developer Name and Rating">
           <p>{{developer.firstName + developer.lastName}}</p>
-          <pv-rating v-model="developer.rating" readonly :cancel="false" aria-label="Developer Rating" />
+
         </div>
-        <router-link to="/message" aria-label="Send Message Link">
-          <i class="pi pi-send text-xl text-purple-500" aria-label="Send Message Icon"></i>
-        </router-link>
       </div>
     </template>
 
@@ -62,7 +58,7 @@ export default {
       </div>
 
       <template v-for="(category, index) in categories" :key="index">
-        <hr aria-label="Separator Line" />
+
         <div class="editable-container secondary" aria-label="Category Information">
           <div class="subtitle">{{ $t(category) }}</div>
           <span class="editable-text">{{ categoryTexts[index] }}</span>
@@ -120,7 +116,7 @@ img {
 .editable-container {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin: 0.5rem 0;
 }
 .editable-text{
   word-wrap: break-word;

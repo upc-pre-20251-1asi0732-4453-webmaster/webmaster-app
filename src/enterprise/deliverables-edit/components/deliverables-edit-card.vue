@@ -124,7 +124,12 @@ export default {
 <template>
   <div class="flex justify-content-center">
     <div class="card-style p-6 mt-6 mb-6">
-      <h1 class="flex align-items-center justify-content-center">{{ $t('Edit deliverable') }}</h1>
+      <div class="flex align-items-center justify-content-between mb-4">
+        <h1 class="flex align-items-center justify-content-center flex-1">{{ $t('Edit deliverable') }}</h1>
+        <i class="pi pi-times close-button" style="font-size: 1.5rem" @click="$router.go(-1)"
+           aria-label="Close Card"> </i>
+
+      </div>
       <div v-if="editableDeliverable.id" class="flex flex-column">
         <!-- Name -->
         <pv-textarea
@@ -180,12 +185,27 @@ export default {
 </template>
 
 <style scoped>
+.close-button {
+  position: absolute;
+  padding: 20px;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: #495057;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .card-style {
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   width: 60%;
+  position: relative;
 }
+
 
 textarea {
   resize: none;

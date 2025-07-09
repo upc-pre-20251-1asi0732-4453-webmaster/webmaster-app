@@ -53,8 +53,8 @@ export class DeliverableService{
         return response.data;
     }
 
-    async reviewDeliverable(projectId, deliverableId, data) {
-        const response = await http.patch(`/Projects/${projectId}/deliverables/${deliverableId}/review`, data);
+    async reviewDeliverable(projectId, deliverableId, isApproved) {
+        const response = await http.patch(`/Projects/${projectId}/deliverables/${deliverableId}/review`, isApproved);
         return response.data;
     }
 

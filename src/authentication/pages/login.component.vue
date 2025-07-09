@@ -29,7 +29,6 @@ export default {
       localStorage.setItem('token', tokenJSON);
     },
     async handleLogin(userData) {
-      console.log("hola", userData);
       this.user = userData.Mail;
       this.password = userData.Password;
 
@@ -40,7 +39,8 @@ export default {
         this.loggedId = response.id;
         const role = response.roles[0];
         this.userType = role === "ROLE_ENTERPRISE" ? "enterprises" :
-            role === "ROLE_DEVELOPER" ? "developers" : null;
+            role === "ROLE_DEVELOPER" ? "developers" :
+                role === "ROLE_ADMIN" ? "admins" : null;
         this.token = response.token;
 
         this.saveUserToLocalStorage(this.loggedId, this.userType, this.token);

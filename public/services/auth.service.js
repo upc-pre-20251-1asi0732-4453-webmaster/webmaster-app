@@ -13,10 +13,10 @@ const http = axios.create({
 
 export class AuthService {
 
-    async authenticate(username, password) {
+    async authenticate(userEmail, password) {
         try {
             const response = await http.post('/authentication/sign-in', {
-                username,
+                userEmail,
                 password
             });
             const { token } = response.data;
@@ -32,7 +32,7 @@ export class AuthService {
 
     async registerDeveloper(developer) {
         const response = await http.post('/authentication/sign-up/developer', {
-            username: developer.username,
+            userEmail: developer.username,
             password: developer.password,
             firstName: developer.firstName,
             lastName: developer.lastName
@@ -42,7 +42,7 @@ export class AuthService {
 
     async registerEnterprise(enterprise) {
         const response = await http.post('/authentication/sign-up/enterprise', {
-            username: enterprise.username,
+            userEmail: enterprise.username,
             password: enterprise.password,
             enterpriseName: enterprise.enterpriseName
         });

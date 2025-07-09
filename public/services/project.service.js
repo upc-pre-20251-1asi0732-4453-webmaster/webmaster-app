@@ -25,6 +25,7 @@ export class ProjectService {
     async getProjectByDeveloper(developerUserId) {
         const response = await http.get(`/projects/developer/${developerUserId}`);
         return response.data;
+        console.log("Respuesta del endpoint pa project",respons.data);
     }
 
     async getProjectByEnterprise(enterpriseUserId) {

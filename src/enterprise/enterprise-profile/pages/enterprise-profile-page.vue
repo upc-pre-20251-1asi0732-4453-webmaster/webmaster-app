@@ -12,18 +12,20 @@ export default {
   data() {
     return {
       enterpriseProfile: null,
-      developerRepository: null,
+      developerRepository: [],
       homeService: new HomeService(),
-      projectService: new ProjectService()
+      projectService: new ProjectService(),
+      projectsLoading: true
     }
   },
   created(){
     let id = this.$route.params.id;
 
     this.homeService.getEnterpriseInfoByID(id).then((response)=> {
+      console.log('Response data:', response.data);
       this.enterpriseProfile = new CompanyEntity(
-          response.data.enterprise_name,
-          response.data.profile_img_url,
+          response.data.enterpriseName,
+          response.data.profileImgUrl,
           response.data.description,
           response.data.country,
           response.data.ruc,
@@ -34,33 +36,111 @@ export default {
       );
       console.log(this.enterpriseProfile);
 
-      localStorage.setItem('profile img', this.enterpriseProfile.profile_img_url);
+      if (this.enterpriseProfile.profileImgUrl) {
+        localStorage.setItem('profile img', this.enterpriseProfile.profileImgUrl);
+      }
+
+
     }).catch((error) => {
       console.error("Error en la solicitud:", error);
+      this.loading = false;
     });
-    this.projectService.getProjectByEnterprise(id).then((response) => {
-      this.developerRepository = response;
-      console.log(response);
-    });
-  },
-  methods(){
 
+    this.projectService.getProjectByEnterprise(id).then((response) => {
+      this.developerRepository = Array.isArray(response) ? response : [];
+      console.log(response);
+      this.projectsLoading = false;
+    }).catch((error) => {
+      console.error("Error al obtener proyectos:", error);
+      this.developerRepository = [];
+      this.projectsLoading = false;
+    });
   },
+
+  methods: {
+
+
+  }
 }
 </script>
 
 <template>
-  <div class="flex justify-content-evenly flex-wrap mb-5" v-if="enterpriseProfile">
-    <enterprise-profile-card :enterprise="enterpriseProfile"/>
-    <enterprise-project-card :projects="developerRepository"/>
+  <div class="main-container">
+    <div class="flex justify-content-evenly flex-wrap mb-5">
+
+      <div class="profile-card-container">
+        <enterprise-profile-card v-if="enterpriseProfile" :enterprise="enterpriseProfile"/>
+        <div v-else class="loading-card">
+          <div class="loading-spinner" />
+          <p class="loading-text">Loading profile...</p>
+        </div>
+      </div>
+
+
+      <div class="projects-card-container">
+        <enterprise-project-card v-if="!projectsLoading" :projects="developerRepository"/>
+        <div v-else class="loading-card">
+          <div class="loading-spinner" />
+          <p class="loading-text">Loading projects...</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.main-container{
-  display:flex;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-  margin-bottom: 6rem;
+.main-container {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.profile-card-container,
+.projects-card-container {
+  display: flex;
+  justify-content: center;
+}
+
+.loading-card {
+  width: 30rem;
+  min-width: 20rem;
+  box-shadow: 0 20px 40px rgb(57, 57, 57);
+  margin-top: 4rem;
+  max-height: 800px;
+  min-height: 620px;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loading-text {
+  color: #6b7280;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 799px) {
+  .loading-card {
+    margin-top: 2rem;
+  }
 }
 </style>

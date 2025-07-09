@@ -14,11 +14,11 @@ const http = axios.create({
 export class HomeService {
 
     getEnterpriseInfoByID(id) {
-        return http.get(`/enterprises/${id}`);
+        return http.get(`/enterprise/${id}`);
     }
 
     getEnterpriseByUserId(userId) {
-        return http.get(`/enterprises/user/${userId}`);
+        return http.get(`/enterprise/${userId}`);
     }
 
     getDeveloperList() {
@@ -26,7 +26,7 @@ export class HomeService {
     }
 
     getDevProfileByUserId(userId) {
-        return http.get(`/developers/user/${userId}`);
+        return http.get(`/developers/${userId}`);
     }
 
     getDevInfoByID(id) {
@@ -38,7 +38,7 @@ export class HomeService {
     }
 
     updateEnterpriseInfo(id, data) {
-        return http.put(`/enterprises/${id}`, data);
+        return http.put(`/enterprise/${id}`, data);
     }
 
     updateDevProfileImg(id, data) {
@@ -46,6 +46,6 @@ export class HomeService {
     }
 
     updateEnterpriseProfileImg(id, data) {
-        return http.put(`/enterprises/${id}/img`, data);
+        return http.put(`/enterprise/${id}/img`, data);
     }
 }

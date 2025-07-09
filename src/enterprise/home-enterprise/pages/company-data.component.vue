@@ -6,16 +6,16 @@
 
     <div v-else-if="hasError" class="status-card">
       <div class="status-icon">⚠️</div>
-      <h3 class="status-title">Error al cargar los datos de la empresa</h3>
-      <p class="status-text">Hubo un problema al obtener la información. Por favor, intenta nuevamente.</p>
+      <h3 class="status-title">Error loading company data</h3>
+      <p class="status-text">There was a problem getting the information. Please try again.</p>
       <button @click="reloadPage" class="status-button">
-        Volver a intentar
+        Try again
       </button>
     </div>
 
     <div v-else class="status-card">
       <div class="loading-spinner"></div>
-      <p class="status-text">Cargando datos de la empresa…</p>
+      <p class="status-text">Loading enterprise data…</p>
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@ export default {
       const response = await this.homeService.getEnterpriseByUserId(userId);
       this.enterprise = response.data;
 
+      console.log("Datos de la empresa:",response.data);
       this.myCom = new CompanyEntity(
           this.enterprise.id,
           this.enterprise.enterpriseName,
@@ -56,10 +57,11 @@ export default {
           this.enterprise.ruc,
           this.enterprise.phone,
           this.enterprise.website,
-          this.enterprise.sector,
-          []
+          this.enterprise.sector
       );
-      localStorage.setItem("profile img", data.profileImgUrl);
+      localStorage.setItem("profile img", this.enterprise.profileImgUrl);
+      localStorage.setItem("user name", this.enterprise.enterpriseName);
+      localStorage.setItem("user email", this.enterprise.enterpriseEmail);
     } catch (err) {
       console.error("Error al cargar los datos de la empresa", err);
       this.hasError = true;
@@ -87,7 +89,7 @@ export default {
   margin-top:-3.3rem; /* Ajusta la distancia desde la parte superior */
   padding: 2rem; /* Espaciado interno */
   border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra */
+
 }
 
 .status-card {

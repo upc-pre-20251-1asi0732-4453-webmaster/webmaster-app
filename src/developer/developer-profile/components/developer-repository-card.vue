@@ -21,24 +21,25 @@ export default {
 
 <template>
   <pv-card aria-label="Projects card">
-    <template #title> <p  style="color: #3554BC" aria-label="Projects Title">{{$t('developer-repository-card-part1')}}</p></template>
+    <template #title>
+      <p style="color: #3554BC" aria-label="Projects Title">{{$t('developer-repository-card-part1')}}</p>
+    </template>
     <template #content>
       <hr aria-label="Separator Line">
       <div class="project-container" aria-label="Project Container">
-        <template v-if="projects" class="project-list" v-for="project in projects" aria-label="Project Item">
-          <div class="project bg-blue-100" aria-label="Project Information">
-            <h4>{{project.title}}</h4>
+        <div v-if="projects && projects.length > 0" class="project-list" aria-label="Project List">
+          <div v-for="project in projects" :key="project.id" class="project bg-blue-100" aria-label="Project Information">
+            <h4>{{project.name}}</h4>
           </div>
-        </template>
-        <template v-else aria-label="No Projects Message">
+        </div>
+        <div v-else aria-label="No Projects Message">
           <div class="project bg-gray-100" aria-label="Placeholder Project">
             No Projects
           </div>
-        </template>
+        </div>
       </div>
     </template>
   </pv-card>
-
 </template>
 
 <style scoped>

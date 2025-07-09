@@ -5,7 +5,7 @@ export default {
   name: "enterprise-profile-card",
   data() {
     return {
-      categories: ['País', 'RUC', 'Teléfono', 'Correo', 'Página web', 'Sector'],
+      categories: ['Country', 'RUC', 'Phone', 'Web Page', 'Sector'],
       categoryTexts: [],
     }
   },
@@ -16,7 +16,7 @@ export default {
     }
   },
   watch: {
-    developer: {
+    enterprise: {
       handler: 'updateCategoryTexts',
       immediate: true,
     },
@@ -28,7 +28,6 @@ export default {
           this.enterprise.country,
           this.enterprise.RUC,
           this.enterprise.phone,
-          this.enterprise.User.email,
           this.enterprise.website,
           this.enterprise.sector
         ];
@@ -49,9 +48,7 @@ export default {
         <div aria-label="Developer Name and Rating">
           <p>{{enterprise.enterprise_name}}</p>
         </div>
-        <router-link to="/message" aria-label="Send Message Link">
-          <i class="pi pi-send text-xl text-purple-500" aria-label="Send Message Icon"></i>
-        </router-link>
+
       </div>
     </template>
 
@@ -63,8 +60,8 @@ export default {
       </div>
 
       <template v-for="(category, index) in categories" :key="index">
-        <hr aria-label="Separator Line" />
-        <div class="editable-container secondary" aria-label="Category Information">
+
+        <div class="editable-container secondary mb-3" aria-label="Category Information">
           <div class="subtitle">{{ category }}</div>
           <span class="editable-text">{{ categoryTexts[index] }}</span>
         </div>

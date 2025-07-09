@@ -24,33 +24,35 @@ export default {
     }
   },
   created(){
-
+    if (!Array.isArray(this.projects)) {
+      console.warn('Projects prop is not an array:', this.projects);
+    }
   }
 }
 </script>
 
 <template>
   <pv-card>
-    <template #title> <p  style="color: #3554BC">Proyectos</p></template>
+    <template #title>
+      <p style="color: #3554BC">Projects</p>
+    </template>
     <template #content>
       <hr>
-           <template v-if="projects.length > 0" class="project-list" v-for="project in projects">
-              <div class="project">
-                <h4>{{project.name}}</h4>
-                <p class="subtitle tipo-proyecto">{{project.type}}</p>
-                <p class="postulantes"  v-if="!project.started">Postulantes: {{project.applicants_id.length}}</p>
-                <pv-progressbar v-else :value="project.progress"></pv-progressbar>
-              </div>
-            </template>
-      <template v-else aria-label="No Projects Message">
-        <div class="project bg-gray-100" aria-label="Placeholder Project">
-          No Projects
+      <div v-if="projects && projects.length > 0" class="project-list">
+        <div
+            v-for="(project, index) in projects"
+            :key="`project-${index}`"
+            class="project"
+        >
+          <h4>{{ project.name || 'Sin nombre' }}</h4>
+          <p class="subtitle tipo-proyecto">{{ project.type || 'Sin tipo' }}</p>
         </div>
-      </template>
+      </div>
+      <div v-else class="project bg-gray-100" aria-label="No Projects Message">
+        No Projects
+      </div>
     </template>
   </pv-card>
-
-
 </template>
 
 <style scoped>
@@ -114,6 +116,7 @@ span{
   overflow: auto;
   height: auto;
   max-height: 680px;
+
 }
 .project{
   background-color:#D9D9D9;
@@ -122,8 +125,10 @@ span{
   display: flex;
   flex-direction: column;
   text-align: center;
-  margin: 10px;
+  justify-content: center;
+
   height: 120px;
+  margin-bottom: 20px;
   transition: transform 0.2s ease;
 }
 .project:hover{

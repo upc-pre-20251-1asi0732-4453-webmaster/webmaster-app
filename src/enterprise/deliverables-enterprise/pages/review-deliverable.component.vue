@@ -1,5 +1,3 @@
-// review-deliverable.vue
-
 <script>
 import { DeliverableService } from '../../../../public/services/deliverable.service.js';
 import DeliverableCard from '../components/deliverable-card.component.vue';
@@ -29,32 +27,24 @@ export default {
         console.error('Error fetching deliverable:', error);
       }
     },
-    async approveDeliverable() {
+    async reviewDeliverable(isApproved) {
       const { projectId, deliverableId } = this.$route.params;
-      await this.deliverableService.reviewDeliverable(projectId, deliverableId, true);
-      this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Approved`);
-    },
-    async rejectDeliverable() {
-      const { projectId, deliverableId } = this.$route.params;
-      await this.deliverableService.reviewDeliverable(projectId, deliverableId, false);
-      this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/Rejected`);
+      try {
+        await this.deliverableService.reviewDeliverable(projectId, deliverableId, isApproved);
+
+        const status = isApproved ? 'Approved' : 'Rejected';
+        this.$router.push(`/Projects/${projectId}/Deliverables/${deliverableId}/${status}`);
+      } catch (error) {
+        console.error('Error reviewing deliverable:', error);
+      }
     },
     handleApproval(action) {
-      console.log('handleApproval action:', action);
-      this.action = action;
-      this.showConfirmationDialog = true;
-    },
-    handleRejection(action) {
-      console.log('handleApproval action:', action);
       this.action = action;
       this.showConfirmationDialog = true;
     },
     async confirmAction() {
-      if (this.action === 'approve') {
-        await this.approveDeliverable();
-      } else if (this.action === 'reject') {
-        await this.rejectDeliverable();
-      }
+      const isApproved = this.action === 'approve';
+      await this.reviewDeliverable(isApproved);
       this.showConfirmationDialog = false;
     }
   }
@@ -63,7 +53,7 @@ export default {
 
 <template>
   <div :class="{ blur: showConfirmationDialog }">
-    <deliverable-card :deliverable="myDeliverable" @approve-deliverable="handleApproval" @reject-deliverable="handleRejection"></deliverable-card>
+    <deliverable-card :deliverable="myDeliverable" @approve-deliverable="handleApproval('approve')" @reject-deliverable="handleApproval('reject')"></deliverable-card>
   </div>
   <div v-if="showConfirmationDialog" class="dialog-container">
     <confirmation-dialog :action="action" @confirm="confirmAction" @cancel="showConfirmationDialog = false"></confirmation-dialog>
@@ -84,6 +74,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Optional: This adds a semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>

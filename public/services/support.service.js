@@ -5,7 +5,7 @@ import {environment} from "@/environment/environment.js";
 const token = localStorage.getItem('token');
 
 const http = axios.create({
-    baseURL: environment.baseUrl,
+    baseURL: "http://localhost:5268/api/v1/",
     headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -15,7 +15,7 @@ const http = axios.create({
 export default {
     async createSupportRequest(supportRequest) {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('user id');
             if (!token) {
                 throw new Error('Token not found');
             }
@@ -38,6 +38,27 @@ export default {
         } catch (error) {
             console.error('Error creating support request:', error);
             console.log(error.response);
+            throw error;
+        }
+    },
+
+    async getSupportTickets() {
+        try {
+            const response = await http.get('/support-ticket');
+            console.log('Tickets recibidos del backend:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error obteniendo tickets de soporte:', error);
+            throw error;
+        }
+    },
+
+    async resolveSupportTicket(ticketId) {
+        try {
+            const response = await http.patch(`/support-ticket/${ticketId}?is_resolved=true`);
+            return response.data;
+        } catch (error) {
+            console.error('Error marcando ticket como resuelto:', error);
             throw error;
         }
     },

@@ -25,6 +25,7 @@ import SearchProjectList from "../developer/search-project/pages/search-project-
 import EnterpriseProfilePage from "../enterprise/enterprise-profile/pages/enterprise-profile-page.vue";
 import PostulateProject from "../developer/postulate-project/pages/postulate-project-page.component.vue";
 
+import SupportTicketsPage from "../admin/pages/support-ticket-list.vue";
 import SupportPage from "../shared/pages/support-page.vue";
 import DeliverablesDetailsCard from "../enterprise/deliverables-edit/components/deliverables-edit-card.vue";
 import DeliverableReview from "../enterprise/deliverables-enterprise/pages/review-deliverable.component.vue";
@@ -166,6 +167,11 @@ const router = createRouter({
                     path: '/support',
                     name: 'support',
                     component: SupportPage
+                },
+                {
+                    path: '/main/admins/:id',
+                    name: 'support',
+                    component: SupportTicketsPage
                 }
             ]
         },

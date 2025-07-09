@@ -1,6 +1,7 @@
 <script>
 import { ProjectService } from "../../../../public/services/project.service.js";
 import { ProjectEntity } from "../../../shared/models/project.model.js";
+import {CandidatesService} from "../../../../public/services/candidates.service.js";
 
 export default {
   name: "apply-project",
@@ -9,7 +10,9 @@ export default {
       showButtons: false,
       showBlurEffect: false,
       projectService: new ProjectService(),
-      developerId: localStorage.getItem("user id"),
+      candidatesService: new CandidatesService(),
+      developerId: localStorage.getItem("developer id"),
+      projectId: localStorage.getItem("project id"),
     };
   },
   props: {
@@ -20,16 +23,23 @@ export default {
   },
   computed: {
     hasApplied() {
-      return this.project.candidates.some(
-          (candidate) => candidate.userId === Number(this.developerId)
-      );
-    },
+      return Array.isArray(this.project.candidates) &&
+          this.project.candidates.some(
+              (candidate) => candidate === this.developerId
+          );
+    }
+
   },
   methods: {
-    sendApplicant() {
-      let developer_Id = localStorage.getItem("user id");
-      let project_Id = localStorage.getItem("project id");
-      this.projectService.addApplicant(project_Id, Number(developer_Id));
+    async sendApplicant() {
+
+      try{
+        const response = await this.candidatesService.applyToAProject(this.projectId, this.developerId);
+      }catch(error){
+        console.log("error al enviar postulación: ", error);
+        console.log("detalle del error:", error?.response?.data);
+      }
+
     },
     showTemplate() {
       this.showBlurEffect = true;
@@ -216,17 +226,16 @@ export default {
       </div>
     </div>
 
-    <!-- Application Section -->
     <div class="application-section">
       <div class="application-content">
         <div v-if="!hasApplied" class="apply-container">
-          <h3 class="apply-title">¿Listo para formar parte de este proyecto?</h3>
+          <h3 class="apply-title">Ready to be part of this project?</h3>
           <p class="apply-subtitle">
-            Postúlate ahora y comienza a trabajar en este increíble proyecto
+            Apply now and start working on this amazing project
           </p>
-          <pv-button @click="showTemplate()" :label="$t('apply-project-part8')" class="apply-btn">
+          <pv-button @click="showTemplate()" :label="$t('apply-project-part8')" class="apply-btn" size="large">
             <i class="pi pi-send mr-2"></i>
-            <p>Postular</p>
+            <p>Send</p>
           </pv-button>
         </div>
 
@@ -234,9 +243,9 @@ export default {
           <div class="success-icon">
             <i class="pi pi-check-circle"></i>
           </div>
-          <h3 class="success-title">¡Ya te has postulado!</h3>
+          <h3 class="success-title">You have already applied!</h3>
           <p class="success-message">
-            Tu postulación está siendo revisada. Te contactaremos pronto.
+            Your application is being reviewed. We will contact you soon.
           </p>
         </div>
       </div>
@@ -579,6 +588,13 @@ export default {
   margin-bottom: 0.5rem;
 }
 
+.apply-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
 .apply-subtitle {
   font-size: 1.1rem;
   opacity: 0.9;
@@ -589,17 +605,21 @@ export default {
   background: white;
   color: #2d3748;
   border: none;
-  padding:5px 20px;
-  font-size: 1.1rem;
+  width: 150px;
+  font-size: 1rem;
+  padding: 0;
   font-weight: 600;
   border-radius: 15px;
   transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+
 }
 
 .apply-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  background: #b1b0b0;
+  background: #f7fafc;
 }
 
 .already-applied {

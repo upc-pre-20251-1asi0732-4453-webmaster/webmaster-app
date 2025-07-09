@@ -21,26 +21,54 @@ export default {
 
 <template>
 
-  <div class="flex flex-column justify-content-between">
-    <div>
-      <div v-if="this.user_type ==='developers'">
-        <toolbar-freelancer/>
-      </div>
-      <div v-else>
-        <toolbar-enterprise/>
-      </div>
-      <div class="p-container-fluid px-0">
-        <div class="mt-3 w-full mt-3 mb-3">
-          <router-view></router-view>
+  <div class="flex flex-column justify-content-between container">
+    <main>
+      <div>
+        <div v-if="this.user_type ==='developers'">
+          <toolbar-freelancer/>
+        </div>
+        <div v-else>
+          <toolbar-enterprise/>
+        </div>
+        <div class="p-container-fluid px-0">
+          <div class="mt-3 w-full mt-3 mb-3">
+            <router-view></router-view>
+          </div>
         </div>
       </div>
-    </div>
-    <footer-webmaster></footer-webmaster>
+    </main>
+
+    <footer>
+      <footer-webmaster></footer-webmaster>
+    </footer>
+
   </div>
 
 </template>
 
 <style scoped>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+.container{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  flex-shrink: 0;
+
+}
 
 .p-container-fluid
 {

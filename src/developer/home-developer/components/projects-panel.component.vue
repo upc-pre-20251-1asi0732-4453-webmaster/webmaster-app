@@ -9,162 +9,180 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      projectStateMap: {
+        'LOOKING_FOR_DEVELOPERS': 'Looking for developers',
+        'NOT_STARTED': 'Not started',
+        'IN_PROCESS': 'In process',
+        'COMPLETED': 'Completed',
+      }
+    };
+  },
   methods: {
     goToDeliverablesList(projectId) {
       this.$router.push(`/projects/developers/${projectId}/deliverables`);
     },
     translateState(state) {
-      const stateMap = {
-        LOOKING_FOR_DEVELOPERS: "Pendiente de inicio",
-        IN_PROCESS: "En desarrollo",
-        ON_HOLD: "En pausa",
-        COMPLETED: "Finalizado"
-      };
-      return stateMap[state] || "Estado desconocido";
+      return this.projectStateMap[state] || "Estado desconocido";
+    },
+    handleProjectClick(projectID, state) {
+      if (state === "IN_PROCESS" || state === "COMPLETED") {
+        this.goToDeliverablesList(projectID);
+      }
     }
   }
 };
 </script>
 
 <template>
-  <pv-card class="projects-panel-card">
+  <pv-card>
     <template #title>
-      <h2 class="section-title">Mis Proyectos</h2>
+      <div class="projects-header">
+        <h1 class="projects-title">My projects</h1>
+      </div>
     </template>
 
     <template #content>
-      <div class="project-list">
-        <pv-card
+      <hr class="separator"/>
+      <div v-if="projects && projects.length === 0" class="p-m-3">
+        No tienes proyectos asignados aún.
+      </div>
+      <div v-else class="project-list">
+        <div
             v-for="project in projects"
             :key="project.project_ID"
-            class="project-card"
-            flat
+            class="project"
+            @click="handleProjectClick(project.project_ID, project.stateProject)"
         >
-          <template #title>
-            <div class="card-header">
-              <span class="project-name">{{ project.nameProject }}</span>
-              <span class="project-type">{{ project.type }}</span>
-            </div>
-          </template>
+          <h4>{{ project.nameProject }}</h4>
+          <p class="subtitle tipo-proyecto">
+            {{ projectStateMap[project.stateProject] }}
+          </p>
 
-          <template #content>
-            <p class="project-description">{{ project.descriptionProject }}</p>
-            <div class="project-info">
-              <span><strong>Presupuesto:</strong> ${{ project.budget }}</span>
-              <span><strong>Estado:</strong> {{ translateState(project.stateProject) }}</span>
-            </div>
-            <div class="progress-section">
-              <pv-progressbar :value="project.projectProgressBar" showValue />
-            </div>
-          </template>
-
-          <template #footer>
-            <pv-button
-                label="Ver Detalles"
-                icon="pi pi-arrow-right"
-                @click="goToDeliverablesList(project.project_ID)"
-                class="w-full"
-            />
-          </template>
-        </pv-card>
+          <pv-progressbar :value="Math.trunc(project.projectProgressBar)"/>
+        </div>
       </div>
     </template>
   </pv-card>
 </template>
 
 <style scoped>
-.projects-panel-card {
+hr {
+  opacity: 0.3;
+}
+
+@media (max-width: 799px) {
+  .p-card {
+    margin-top: 2rem;
+  }
+}
+
+.p-card {
   width: 30rem;
   min-width: 20rem;
-  max-width: 30rem;
-  height: 625px; /* Reducir la altura total */
-  margin: 3.9rem auto; /* Reducir el margen superior e inferior */
-  background: #f9fafb;
   box-shadow: 0 20px 40px rgb(57, 57, 57);
-  border-radius: 12px;
+  margin-top: 4rem;
+  max-height: 800px;
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:deep(.p-card-title) {
+  display: flex;
+  align-items: center;
+  margin: 20px 20px 0 20px;
+  justify-content: center;
+}
+
+:deep(.p-card-content) {
+  margin: 0 20px;
+  flex-grow: 1;
+  overflow: hidden;
+  max-height: 90%;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+span {
+  max-width: 90%;
 }
 
 .project-list {
-  max-height: 450px; /* Reducir la altura máxima de la lista */
-  overflow-y: auto;
-  padding-right: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem; /* Reducir el espacio entre las cards */
-}
-
-.project-card {
-  padding: 0.1rem; /* Reducir el espacio interno */
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.section-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #1f2937;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 450px;
+  overflow-y: auto;
+  padding: 20px;
 }
 
-.project-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #0d47a1;
+.project {
+  background-color: #F0F0F0;
+  box-shadow: 0 2px 4px rgb(197, 197, 197);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: 150px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 1rem;
 }
 
-.project-type {
-  background: #cbd5e1;
-  color: #1f2937;
-  padding: 0.3rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
+.project:hover {
+  transform: scale(1.04, 1.04);
+}
+
+.tipo-proyecto {
+  font-size: 0.8rem;
 }
 
 .project-description {
-  font-size: 0.95rem;
-  color: #374151;
-  margin-bottom: 0.8rem;
-}
-
-.project-info {
   font-size: 0.9rem;
-  color: #4b5563;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 0.8rem;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0.5rem 0;
 }
 
-.progress-section {
+h4 {
+  margin: 1px
+}
+
+:deep(.p-progressbar) {
+  width: 80%;
+  align-self: center;
+  margin: auto;
+  height: 10px;
+}
+
+:deep(.p-progressbar .p-progressbar-value) {
+  background: linear-gradient(to right, #3554BC, #B864F3);
+}
+
+.projects-header {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.progress-section :deep(.p-progressbar) {
-  width: 100%;
-  max-width: 250px;
-  height: 1rem;
+.projects-title {
+  color: #3554BC;
+  font-size: 1.5rem;
+  margin: 0;
 }
 
-.progress-section :deep(.p-progressbar .p-progressbar-value) {
-  background: linear-gradient(to right, #3554BC, #B864F3);
+.separator {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0.5rem 0 1rem;
 }
 
 .project-list::-webkit-scrollbar {
@@ -183,20 +201,5 @@ export default {
 
 .project-list::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
-}
-
-@media (max-width: 640px) {
-  .projects-panel-card {
-    width: auto;
-    margin: 2rem 1rem;
-    padding: 1rem;
-    height: 100vh;
-  }
-
-  .project-list {
-    max-height: calc(100vh - 200px);
-    gap: 1rem;
-    padding-right: 5px;
-  }
 }
 </style>
